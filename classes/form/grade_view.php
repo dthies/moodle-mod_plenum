@@ -134,14 +134,6 @@ class grade_view extends dynamic_form {
             $mform->setDefault('grade', (float)$grade);
         }
 
-        $gradinginfo = grade_get_grades(
-            $context->get_course_context()->instanceid,
-            'mod',
-            'plenum',
-            $cm->instance,
-            [$data->userid]
-        );
-
         $plenum = \core\di::get(\mod_plenum\manager::class)->get_plenum($context, $cm);
         $mform->addElement('html', $plenum->view_status());
     }

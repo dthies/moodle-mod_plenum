@@ -322,7 +322,7 @@ class plenum {
                     $itemid = $grade->id;
                 }
                 if ($gradingdisabled && $itemid) {
-                    $gradinginstance = $controller->get_current_instance($USER->id, $itemid);
+                    $gradinginstance = $controller->get_current_instance($userid, $itemid);
                 } else if (!$gradingdisabled) {
                     $instanceid = optional_param('advancedgradinginstanceid', 0, PARAM_INT);
                     $gradinginstance = $controller->get_or_create_instance(
@@ -331,8 +331,6 @@ class plenum {
                         $itemid
                     );
                 }
-            } else {
-                $advancedgradingwarning = $controller->form_unavailable_notification();
             }
         }
         if ($gradinginstance) {
@@ -475,7 +473,6 @@ class plenum {
         // Need grade permission.
         require_capability('mod/plenum:grade', $this->context);
 
-        $instance = $this->get_instance();
         $this->apply_grade_to_user($data, $userid);
 
         return true;
