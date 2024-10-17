@@ -52,17 +52,17 @@ class main extends \mod_plenum\output\main {
     /**
      * Constructor.
      *
-     * @param context_module $context The context of the module.
-     * @param stdClass $cm Course module info for activity
-     * @param stdClass $instance Activity record
+     * @param context_module $context Module context
+     * @param cm_info $cm Course module record
+     * @param stdClass $instance Instance record
      */
     public function __construct(
-        /** @var $context Module context */
-        protected readonly context_module $context,
-        /** @var $cm Course module record */
-        protected readonly cm_info $cm,
+        /** @var context_module $context Module context */
+        protected context_module $context,
+        /** @var cm_info $cm Course module record */
+        protected cm_info $cm,
         /** @var stdClass $instance Instance record */
-        protected readonly stdClass $instance
+        protected stdClass $instance
     ) {
         $this->currentgroup = groups_get_activity_group($cm);
 

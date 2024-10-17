@@ -54,6 +54,7 @@ class join_room extends external_api {
      * Join room
      *
      * @param int $contextid Module context id
+     * @param bool $join Whether joining or leaving
      * @return array
      */
     public static function execute(int $contextid, bool $join): array {

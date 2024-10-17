@@ -86,7 +86,7 @@ class socket extends \block_deft\socket {
     /**
      * Update content after motion modified
      *
-     * @param after_motion_update Hook
+     * @param after_motion_updated $hook Hook
      */
     public static function after_motion_updated(after_motion_updated $hook) {
         global $DB;

@@ -52,8 +52,6 @@ class view_module extends external_api {
      * Get fragment
      *
      * @param int $contextid Plenary meeting module context id
-     * @param string $fragment Fragment identifier
-     * @param int $id Optional id param for fragment
      * @return array
      */
     public static function execute($contextid): array {

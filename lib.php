@@ -570,6 +570,7 @@ function plenum_reset_gradebook($courseid, $type = '') {
  *
  * @param calendar_event $event
  * @param \core_calendar\action_factory $factory
+ * @param int $userid
  * @return \core_calendar\local\event\entities\action_interface|null
  */
 function mod_plenum_core_calendar_provide_event_action(

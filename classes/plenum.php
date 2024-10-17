@@ -46,13 +46,19 @@ require_once($CFG->dirroot . '/grade/grading/lib.php');
 class plenum {
     /**
      * Constructor
+     * @param context_module $context Module context
+     * @param null|stdClass|cm_info $cm Course module
+     * @param stdClass|null $course
+     * @param stdClass|null $instance Module instance
+     * @param \core\clock $clock System clock
+     * @param \moodle_database $db Database manager
      */
     public function __construct(
-        /** @var context_module Module context */
+        /** @var context_module $context Module context */
         protected readonly context_module $context,
-        /** @var null|cm_info $cm Course module */
+        /** @var null|stdClass|cm_info $cm Course module */
         protected null|stdClass|cm_info $cm,
-        /** @var stdClass|null $course */
+        /** @var stdClass|null $course Course record */
         protected ?stdClass $course,
         /** @var stdClass|null $instance Module instance */
         protected ?stdClass $instance,
@@ -276,7 +282,6 @@ class plenum {
      * Prepares the form before data are set
      *
      * @param  array $defaultvalues
-     * @param  int $instance
      */
     public function data_preprocessing(array &$defaultvalues) {
         $form = $this->get_course_module()->customdata['form'];
@@ -435,7 +440,6 @@ class plenum {
      *
      * @param stdClass $formdata - the data from the form
      * @param int $userid - the user to apply the grade to
-     * @param int $attemptnumber - The attempt number to apply the grade to.
      * @return void
      */
     protected function apply_grade_to_user($formdata, $userid) {

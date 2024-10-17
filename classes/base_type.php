@@ -56,6 +56,7 @@ class base_type implements renderable, templatable {
      * @param motion $motion Motion
      * @param null|context_module $context The content record for the binder
      * @param null|stdClass $cm Course module
+     * @param null|int $groupid Group id
      */
     public function __construct(
         /** @var $motion Motion */

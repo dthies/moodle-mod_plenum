@@ -135,7 +135,7 @@ class plenum_gradeitem extends component_gradeitem {
      * Get the grade for the specified user.
      *
      * @param stdClass $gradeduser The user being graded
-     * @param stdClass $grader The user who is grading
+     * @param null|stdClass $grader The user who is grading
      * @return stdClass The grade value
      * @throws \dml_exception
      */
