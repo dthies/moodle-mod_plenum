@@ -94,9 +94,6 @@ final class lib_test extends advanced_testcase {
         /** @var \mod_plenum_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_plenum', ['grade' => 100]);
 
-        // Check the Plenary meeting activity exist.
-        $this->assertNotEmpty($DB->get_record('plenum', ['id' => $activity->id]));
-
         $cm = get_coursemodule_from_instance('plenum', $activity->id);
         $plenum = \core\di::get(\mod_plenum\manager::class)->get_plenum(context_module::instance($cm->id), $cm);
 

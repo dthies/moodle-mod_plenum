@@ -309,12 +309,9 @@ class plenum {
      * @return mixed gradingform_instance|null $gradinginstance
      */
     protected function get_grading_instance($userid, $grade, $gradingdisabled) {
-        global $CFG, $USER;
-
         $grademenu = make_grades_menu($this->get_instance()->grade);
         $allowgradedecimals = $this->get_instance()->grade > 0;
 
-        $advancedgradingwarning = false;
         $gradingmanager = get_grading_manager($this->context, 'mod_plenum', 'plenum');
         $gradinginstance = null;
         if ($gradingmethod = $gradingmanager->get_active_method()) {
@@ -330,7 +327,7 @@ class plenum {
                     $instanceid = optional_param('advancedgradinginstanceid', 0, PARAM_INT);
                     $gradinginstance = $controller->get_or_create_instance(
                         $instanceid,
-                        $USER->id,
+                        $userid,
                         $itemid
                     );
                 }
@@ -353,8 +350,6 @@ class plenum {
      * @return void
      */
     public function add_grade_form_elements(MoodleQuickForm $mform, stdClass $data, $params) {
-        global $USER, $CFG, $SESSION;
-
         $grade = $this->db->get_record('plenum_grades', $params);
         $userid = $data->userid ?? 0;
 
@@ -443,7 +438,7 @@ class plenum {
      * @return void
      */
     protected function apply_grade_to_user($formdata, $userid) {
-        global  $CFG, $USER;
+        global  $USER;
 
         $grade = $this->get_user_grade($userid, true);
         $gradingdisabled = !$this->is_grading_enabled();

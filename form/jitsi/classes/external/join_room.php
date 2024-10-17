@@ -58,8 +58,6 @@ class join_room extends external_api {
      * @return array
      */
     public static function execute(int $contextid, bool $join): array {
-        global $DB, $USER;
-
         $params = self::validate_parameters(self::execute_parameters(), [
             'contextid' => $contextid,
             'join' => $join,

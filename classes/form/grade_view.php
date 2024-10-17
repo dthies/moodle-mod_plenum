@@ -85,9 +85,6 @@ class grade_view extends dynamic_form {
      * @return mixed
      */
     public function process_dynamic_submission() {
-        $data = (object)$this->_ajaxformdata;
-        $context = $this->get_context_for_dynamic_submission();
-        $cm = get_coursemodule_from_id('plenum', $context->instanceid);
         return '';
     }
 

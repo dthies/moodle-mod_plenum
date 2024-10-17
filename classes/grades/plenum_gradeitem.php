@@ -78,7 +78,7 @@ class plenum_gradeitem extends component_gradeitem {
     public function user_can_grade(stdClass $gradeduser, stdClass $grader): bool {
         // Validate the required capabilities.
 
-        return has_capablity('mod/plenum:grade', $this->get_context(), $gradeduser);
+        return has_capablity('mod/plenum:grade', $this->get_context(), $grader);
     }
 
     /**
