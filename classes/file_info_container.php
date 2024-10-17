@@ -242,7 +242,7 @@ class file_info_container extends file_info {
             return null;
         }
 
-        if (!$plenum = $DB->get_record('plenum', ['id' => $cm->instance])) {
+        if (!$DB->get_record('plenum', ['id' => $cm->instance])) {
             return null;
         }
 

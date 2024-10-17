@@ -47,7 +47,6 @@ class close_motion extends dynamic_form {
         global $CFG, $USER;
 
         $mform = $this->_form;
-        $context = $this->get_context_for_dynamic_submission();
 
         $mform->addElement('hidden', 'contextid');
         $mform->setType('contextid', PARAM_INT);
@@ -96,8 +95,6 @@ class close_motion extends dynamic_form {
      * @return mixed
      */
     public function process_dynamic_submission() {
-        global $USER;
-
         $data = (object)$this->_ajaxformdata;
         $context = $this->get_context_for_dynamic_submission();
         $motion = new motion($data->id);

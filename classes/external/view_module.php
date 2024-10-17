@@ -55,13 +55,13 @@ class view_module extends external_api {
      * @return array
      */
     public static function execute($contextid): array {
-        global $DB, $OUTPUT, $PAGE;
+        global $DB;
 
         $params = self::validate_parameters(self::execute_parameters(), [
             'contextid' => $contextid,
         ]);
 
-        $context = context::instance_by_id($contextid);
+        $context = context::instance_by_id($params['contextid']);
         self::validate_context($context);
         $cm = get_coursemodule_from_id('plenum', $context->instanceid);
         $course = get_course($context->get_course_context()->instanceid);

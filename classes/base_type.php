@@ -88,7 +88,6 @@ class base_type implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         global $PAGE;
 
-        $options = [];
         $user = core_user::get_user($this->motion->get('usercreated'));
         $userpicture = new user_picture($user);
         $user->pictureurl = $userpicture->get_url($PAGE, $output);
