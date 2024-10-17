@@ -161,7 +161,7 @@ final class search_test extends \advanced_testcase {
             'groupmode' => SEPARATEGROUPS,
         ]);
         $group1 = $this->getDataGenerator()->create_group(['courseid' => $course1->id]);
-        $group2 = $this->getDataGenerator()->create_group(['courseid' => $course1->id]);
+        $this->getDataGenerator()->create_group(['courseid' => $course1->id]);
         $motion1 = $activitygenerator->create_motion([
             'plenumid' => $plenum->cmid,
             'type' => 'open',
