@@ -158,7 +158,7 @@ class base_type implements renderable, templatable {
     public function can_decide() {
         $immediate = motion::immediate_pending($this->get_context(), $this->groupid);
         return has_capability('mod/plenum:preside', $this->context)
-            && in_array($this->motion->get('type'), ['adjorn', 'amend', 'call', 'divide', 'order', 'resolve', 'second'])
+            && in_array($this->motion->get('type'), ['adjourn', 'amend', 'call', 'divide', 'order', 'resolve', 'second'])
             && !$this->needs_second()
             && (!get_config('plenumtype_call', 'enabled') || !$this->is_debatable())
             && !empty($immediate)

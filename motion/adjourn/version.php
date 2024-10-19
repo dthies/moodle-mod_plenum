@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Code to be executed after the plugin's database scheme has been installed is defined here.
+ * Plugin version and other meta-data are defined here.
  *
- * @package     plenumtype_adjorn
- * @category    upgrade
+ * @package     plenumtype_adjourn
  * @copyright   2023 Daniel Thies <dethies@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Custom code to be run on installing the plugin.
- */
-function xmldb_plenumtype_adjorn_install() {
+defined('MOODLE_INTERNAL') || die();
 
-    set_config('enabled', true, 'plenumtype_adjorn');
-
-    return true;
-}
+$plugin->component = 'plenumtype_adjourn';
+$plugin->release = '1.0 Beta';
+$plugin->version = 2024100700;
+$plugin->requires = 2024041600;
+$plugin->maturity = MATURITY_BETA;
+$plugin->dependencies = [
+    'plenumtype_open' => ANY_VERSION,
+];

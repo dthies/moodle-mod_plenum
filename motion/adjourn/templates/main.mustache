@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template plenumtype_adjorn/main
+    @template plenumtype_adjourn/main
 
     This template will render the Plenary meeting main page
 
@@ -46,7 +46,7 @@
         <a href="{{ previous.url }}" data-action="preview"><i class="fa fa-chevron-left"></i> {{ previous.pluginname }}{{# previous.name }}: {{ previous.name }}{{/ previous.name }}</a>
     </div>
 </div>
-<h5>{{# str }} pluginname, plenumtype_adjorn {{/ str }}</h5>
+<h5>{{# str }} pluginname, plenumtype_adjourn {{/ str }}</h5>
 <div>{{# str }} offeredby, mod_plenum, {{ user.fullname }} {{/ str }}</div>
 <div>{{#str }} timecreated, mod_plenum, {{# userdate }} {{ timecreated }}, {{# str }} strftimedatetime, langconfig {{/ str}} {{/ userdate }} {{/ str }}</div>
 <h5>{{# str }} subsidiarymotions, mod_plenum {{/ str }}</h5>

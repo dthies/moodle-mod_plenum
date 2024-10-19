@@ -17,18 +17,36 @@
 /**
  * Plugin version and other meta-data are defined here.
  *
- * @package     plenumtype_adjorn
+ * @package     plenumtype_adjourn
  * @copyright   2023 Daniel Thies <dethies@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace plenumtype_adjourn\form;
 
-$plugin->component = 'plenumtype_adjorn';
-$plugin->release = '1.0 Beta';
-$plugin->version = 2024100700;
-$plugin->requires = 2024041600;
-$plugin->maturity = MATURITY_BETA;
-$plugin->dependencies = [
-    'plenumtype_open' => ANY_VERSION,
-];
+use context;
+use context_user;
+use core_form\dynamic_form;
+use mod_plenum\motion;
+use moodle_exception;
+use moodle_url;
+
+/**
+ * Editing form to create motion
+ *
+ * @package     plenumtype_adjourn
+ * @copyright   2023 Daniel Thies <dethies@gmail.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class edit_motion extends \mod_plenum\form\edit_motion {
+    /**
+     * Form definition
+     */
+    public function definition() {
+        $mform = $this->_form;
+
+        $mform->addElement('html', get_string('createmotion', 'plenumtype_adjourn'));
+
+        parent::definition();
+    }
+}

@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for plenumtype_adjorn.
+ * Privacy Subsystem implementation for plenumtype_adjourn.
  *
- * @package   plenumtype_adjorn
+ * @package   plenumtype_adjourn
  * @copyright 2023 Daniel Thies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plenumtype_adjorn\privacy;
+namespace plenumtype_adjourn\privacy;
 
 /**
- * The plenumtype_adjorn plenary meeting motion plugin does not store any data.
+ * The plenumtype_adjourn plenary meeting motion plugin does not store any data.
  *
  * @copyright 2023 Daniel Thies
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

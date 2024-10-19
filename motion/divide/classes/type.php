@@ -58,6 +58,6 @@ class type extends base_type {
             && has_capability('mod/plenum:preside', $context)
             && !$immediate->is_debatable()
             && !$immediate->needs_second()
-            && in_array($immediate->motion->get('type'), ['adjorn', 'resolve', 'amend', 'call']);
+            && in_array($immediate->motion->get('type'), ['adjourn', 'resolve', 'amend', 'call']);
     }
 }

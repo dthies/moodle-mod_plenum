@@ -64,7 +64,7 @@ class main implements renderable, templatable {
         foreach (motion::get_records(['parent' => $this->motion->get('id') ], 'timecreated') as $key => $motion) {
             if (
                 in_array($motion->get('type'), [
-                    'adjorn',
+                    'adjourn',
                     'amend',
                     'call',
                     'divide',

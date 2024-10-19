@@ -15,33 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Mobile output class for Plenary meeting motion plugin
+ * Mobile definition for Plenary meeting motion
  *
- * @package     plenumtype_adjorn
+ * @package     plenumtype_adjourn
  * @copyright   2023 Daniel Thies <dethies@gmail.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plenumtype_adjorn\output;
+defined('MOODLE_INTERNAL') || die();
 
-use context;
-use context_module;
-use mod_plenum\motion;
-use stdClass;
-
-/**
- * Mobile output class for plenumtype_adjorn
- *
- * @copyright   2023 Daniel Thies <dethies@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class mobile {
-    /**
-     * Returns motion mobile content if any
-     * @param array $args Arguments from tool_mobile_get_content WS
-     */
-    public static function mobile_mod_load($args) {
-        return [
-        ];
-    }
-}
+$addons = [
+    'plenumtype_adjourn' => [
+        'handlers' => [
+            'plenaryadjourn' => [
+                'displaydata' => [
+                    'class' => '',
+                ],
+                'delegate' => 'CoreContentLinksDelegate',
+                'method' => 'mobile_load',
+            ],
+        ],
+        'lang' => [
+            ['pluginname', 'plenumtype_adjourn'],
+            ['createmotion', 'plenumtype_adjourn'],
+            ['editingmotiontype', 'plenumtype_adjourn'],
+        ],
+    ],
+];

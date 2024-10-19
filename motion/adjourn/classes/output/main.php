@@ -17,11 +17,11 @@
 /**
  * Class containing data for Plenary meeting
  *
- * @package     plenumtype_adjorn
+ * @package     plenumtype_adjourn
  * @copyright   2023 Daniel Thies <dethies@gmail.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace plenumtype_adjorn\output;
+namespace plenumtype_adjourn\output;
 
 use cache;
 use context_module;
@@ -93,7 +93,7 @@ class main implements renderable, templatable {
         $data->motions = $motions;
         $data->contextid = $this->context->id;
 
-        $type = new \plenumtype_adjorn\type($this->motion, $this->context);
+        $type = new \plenumtype_adjourn\type($this->motion, $this->context);
 
         return (array)$data + $type->export_for_template($output);
     }

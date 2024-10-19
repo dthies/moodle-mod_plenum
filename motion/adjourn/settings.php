@@ -15,38 +15,26 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Plugin administration pages are defined here.
  *
- * @package     plenumtype_adjorn
+ * @package     plenumtype_adjourn
+ * @category    admin
  * @copyright   2023 Daniel Thies <dethies@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plenumtype_adjorn\form;
+defined('MOODLE_INTERNAL') || die();
 
-use context;
-use context_user;
-use core_form\dynamic_form;
-use mod_plenum\motion;
-use moodle_exception;
-use moodle_url;
-
-/**
- * Editing form to create motion
- *
- * @package     plenumtype_adjorn
- * @copyright   2023 Daniel Thies <dethies@gmail.com>
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class edit_motion extends \mod_plenum\form\edit_motion {
-    /**
-     * Form definition
-     */
-    public function definition() {
-        $mform = $this->_form;
-
-        $mform->addElement('html', get_string('createmotion', 'plenumtype_adjorn'));
-
-        parent::definition();
-    }
+$settings = new admin_settingpage('plenumtype_adjourn_settings', new lang_string('pluginname', 'plenumtype_adjourn'));
+if ($hassiteconfig) {
+    // Add plugin settings.
+    $name = new lang_string('requiresecond', 'plenumtype_adjourn');
+    $description = new lang_string('requiresecond_help', 'plenumtype_adjourn');
+    $setting = new admin_setting_configcheckbox(
+        'plenumtype_adjourn/requiresecond',
+        $name,
+        $description,
+        1
+    );
+    $settings->add($setting);
 }

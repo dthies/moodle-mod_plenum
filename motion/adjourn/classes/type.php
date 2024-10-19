@@ -17,12 +17,12 @@
 /**
  * Plenary meeting motion type definition
  *
- * @package   plenumtype_adjorn
+ * @package   plenumtype_adjourn
  * @copyright 2023 Daniel Thies
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plenumtype_adjorn;
+namespace plenumtype_adjourn;
 
 use context_module;
 use mod_plenum\base_type;
@@ -32,19 +32,19 @@ use renderer_base;
 /**
  * Plenary meeting motion type definition
  *
- * @package   plenumtype_adjorn
+ * @package   plenumtype_adjourn
  * @copyright 2023 Daniel Thies
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class type extends base_type {
     /** Plugin component */
-    const COMPONENT = 'plenumtype_adjorn';
+    const COMPONENT = 'plenumtype_adjourn';
 
     /** Whether information should be shown on motion */
     const DETAIL = true;
 
     /** @var $component */
-    public string $component = 'plenumtype_adjorn';
+    public string $component = 'plenumtype_adjourn';
 
     /**
      * Get plugin identifier
@@ -65,7 +65,7 @@ class type extends base_type {
     public static function in_order($context, $immediate) {
         return $immediate
             && has_capability('mod/plenum:meet', $context)
-            && (!in_array($immediate->motion->get('type'), ['adjorn', 'call', 'divide', 'order']))
+            && (!in_array($immediate->motion->get('type'), ['adjourn', 'call', 'divide', 'order']))
             && !$immediate->motion->has_child('call', motion::STATUS_ADOPT);
     }
 
@@ -99,7 +99,7 @@ class type extends base_type {
      * @return bool
      */
     public function needs_second() {
-        return get_config('plenumtype_adjorn', 'requiresecond')
+        return get_config('plenumtype_adjourn', 'requiresecond')
             && get_config('plenumtype_second', 'enabled')
             && !$this->motion->has_child('second', motion::STATUS_ADOPT);
     }

@@ -17,7 +17,7 @@
 %>
 <%!
 {{!
-    @template plenumtype_adjorn/mobile_edit_form
+    @template plenumtype_adjourn/mobile_edit_form
 
     This template will render the Plenary meeting main page
 
@@ -35,7 +35,7 @@
 <ion-list>
     <ion-item>
         <ion-label text-wrap>
-            {{ 'plugin.plenumtype_adjorn.createmotion' | translate }}
+            {{ 'plugin.plenumtype_adjourn.createmotion' | translate }}
         </ion-label>
     </ion-item>
     <%> mod_plenum/mobile_edit_warning %>
@@ -46,7 +46,7 @@
         method="mobile_move"
         samePage="true"
         useOtherData
-        [args]="{contextid: <% contextid %>, groupid: '<% groupid %>', type: 'adjorn', submit: true}"
+        [args]="{contextid: <% contextid %>, groupid: '<% groupid %>', type: 'adjourn', submit: true}"
         [preSets]="{getFromCache: false, saveToCache: false, reusePending: false}"
     >
     <ion-label>

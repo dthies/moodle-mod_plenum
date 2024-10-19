@@ -17,7 +17,7 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     plenumtype_adjorn
+ * @package     plenumtype_adjourn
  * @category    string
  * @copyright   2023 Daniel Thies <dethies@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,10 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['createmotion'] = 'The motion to adjorn once adopted by the body will conclude the session and any remaining business items. Do you wish to offer this for consideration?';
-$string['editingmotiontype'] = 'Offering motion to adjorn';
-$string['name'] = 'Adjorn';
-$string['pluginname'] = 'Adjorn session';
-$string['privacy:metadata'] = 'The plenary meeting Adjorn session plugin does not store any data.';
+$string['createmotion'] = 'The motion to adjourn once adopted by the body will conclude the session and any remaining business items. Do you wish to offer this for consideration?';
+$string['editingmotiontype'] = 'Offering motion to adjourn';
+$string['name'] = 'Adjourn';
+$string['pluginname'] = 'Adjourn session';
+$string['privacy:metadata'] = 'The plenary meeting Adjourn session plugin does not store any data.';
 $string['requiresecond'] = 'Require second';
 $string['requiresecond_help'] = 'Prevent adoption before a second is received.';
