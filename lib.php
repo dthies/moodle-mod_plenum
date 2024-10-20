@@ -189,13 +189,12 @@ function plenum_grade_item_update($moduleinstance, $reset = false) {
  * Delete grade item for given mod_plenum instance.
  *
  * @param stdClass $moduleinstance Instance object.
- * @return grade_item.
  */
 function plenum_grade_item_delete($moduleinstance) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    return grade_update(
+    grade_update(
         '/mod/plenum',
         $moduleinstance->course,
         'mod',

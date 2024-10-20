@@ -62,11 +62,7 @@ class mod_plenum_mod_form extends moodleform_mod {
         $mform->addHelpButton('name', 'plenumname', 'mod_plenum');
 
         // Adding the standard "intro" and "introformat" fields.
-        if ($CFG->branch >= 29) {
-            $this->standard_intro_elements();
-        } else {
-            $this->add_intro_editor();
-        }
+        $this->standard_intro_elements();
 
         // Settings specific to meeting.
         $mform->addElement('header', 'plenumfieldset', get_string('plenumfieldset', 'mod_plenum'));
