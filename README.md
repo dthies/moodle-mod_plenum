@@ -43,6 +43,23 @@ subplugin settings to accommodate variations in parliamentary procedure.
 3. Install Block deft response or other conferencing integration
 dependency for online meeting support.
 
+## Dependencies ##
+
+The Deft response block is required as a dependency to install. The
+basic functions for the plugin will work without any external
+dependencies. However, the video conferencing options require external
+services to work.
+
+The Deft video meeting form requires that Deft response block is
+configured to work with the service from deftly.us. See Deft response
+block documentation for more information. A free account can be created
+at deftly.us to obtain a sample course there with this plugin configured.
+
+The Jitsi Meet meeting form requires access to a Jitsi Meet server that is
+secured.  One can choose a Jitsi hosting provider or install a local copy
+of Jitsi meet. Configuration is compatible with the Jitsi activity module.
+
+
 ## License ##
 
 2023 onward Daniel Thies <dethies@gmail.com>
