@@ -26,9 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['appid'] = 'App id';
-$string['appid_help'] = '';
+$string['appid_desc'] = 'This Jitsi server should be secured so only participants authorized by the activity can participate. The server administrator should set an App ID and secret to use here.';
 $string['delay'] = 'Delay';
-$string['delay_help'] = 'Time to wait before updating content in seconds. Increase to reduce server load. Decrease to make more responsive.';
+$string['delay_desc'] = 'Time to wait before updating content in seconds. Increase to reduce server load. Decrease to make more responsive.';
 $string['eventhandraiseupdated'] = 'Hand raise updated';
 $string['eventvideoended'] = 'Video ended';
 $string['eventvideostarted'] = 'Video started';
@@ -37,6 +37,6 @@ $string['pluginname'] = 'Jitsi video';
 $string['privacy:metadata'] = 'The Jitsi video meeting plugin does not store any personal data although Jitsi server may be used to record.';
 $string['room'] = 'Room';
 $string['secret'] = 'Secret';
-$string['secret_help'] = '';
+$string['secret_desc'] = 'This Jitsi server administrator should provide secret to access the server.';
 $string['server'] = 'Server';
-$string['server_help'] = 'The Jitsi server to use for meetings';
+$string['server_desc'] = 'The Jitsi server to use for meetings';

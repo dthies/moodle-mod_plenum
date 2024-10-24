@@ -45,6 +45,9 @@ class main implements renderable, templatable {
     /** @var $currentgroup Current group */
     protected $currentgroup;
 
+    /** @var $groupmode Activity group mode */
+    protected $groupmode;
+
     /** @var $motion Motions */
     protected $motions;
 
@@ -63,7 +66,9 @@ class main implements renderable, templatable {
         /** @var stdClass $instance Instance record */
         protected readonly stdClass $instance
     ) {
-        $this->currentgroup = groups_get_activity_group($cm);
+        if ($this->groupmode = groups_get_activity_groupmode($cm)) {
+            $this->currentgroup = groups_get_activity_group($cm);
+        }
     }
 
     /**
@@ -74,10 +79,18 @@ class main implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         $motions = new motions($this->context);
+
+        $form = $this->instance->form;
+        if (!get_config("plenumform_$form", 'enabled')) {
+            return [
+                'invalidform' => true,
+            ];
+        }
         return [
             'contextid' => $this->context->id,
             'cangrade' => has_capability('mod/plenum:grade', $this->context),
             'grade' => $this->instance->grade,
+            'grouprequired' => !empty($this->groupmode) && empty($this->currentgroup),
             'instance' => json_encode($this->instance),
             'name' => $this->instance->name,
         ] + $motions->export_for_template($output);

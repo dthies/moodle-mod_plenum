@@ -32,6 +32,12 @@
         "instance": "{}"
     }
 }}
+
+{{# invalidform }}
+    <div class="alert alert-danger m-2" role="alert">
+        {{# str }} formdisabled, mod_plenum {{/ str }}
+    </div>
+{{/ invalidform }}
 {{# instance }}
 <div class="container-fluid">
 {{# grade }}
@@ -42,6 +48,12 @@
         {{> mod_plenum/grades/view_grade_button }}
     {{/ cangrade }}
 {{/ grade }}
+{{# grouprequired }}
+    <div class="alert alert-warning m-2" role="alert">
+       {{# str }} grouprequired, mod_plenum {{/ str }}
+    </div>
+{{/ grouprequired }}
+{{^ grouprequired }}
     <div data-contextid="{{ contextid }}" data-region="plenum" class="row">
         {{$ formcontent }}
         {{/ formcontent }}
@@ -55,12 +67,17 @@
             </div>
         </div>
     </div>
+{{/ grouprequired }}
 </div>
 {{/ instance }}
 {{# js }}
+{{^ grouprequired }}
+{{# contextid }}
     require([
         'mod_plenum/plenum'
     ], function(PlenumManager) {
         new PlenumManager({{ contextid }}, '{{ token }}');
     });
+{{/ contextid }}
+{{/ grouprequired }}
 {{/ js }}

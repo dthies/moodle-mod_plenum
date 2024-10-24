@@ -36,6 +36,14 @@ use moodle_url;
  */
 class plenumform extends base {
     /**
+     * Return URL used for management of plugins of this type.
+     * @return moodle_url
+     */
+    public static function get_manage_url() {
+        return new moodle_url('/admin/settings.php', ['section' => 'manageplenumformplugins']);
+    }
+
+    /**
      * Allow uninstall
      *
      * @return bool

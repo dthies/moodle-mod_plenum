@@ -65,11 +65,12 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 $plenum = \core\di::get(\mod_plenum\manager::class)->get_plenum($modulecontext, $cm, $course);
-$main = $plenum->get_mainpage();
 
 echo $OUTPUT->header();
 
 groups_print_activity_menu($cm, new moodle_url('/mod/plenum/view.php', ['id' => $cm->id]));
+
+$main = $plenum->get_mainpage();
 
 echo $OUTPUT->render($main);
 

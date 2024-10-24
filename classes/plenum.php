@@ -177,6 +177,9 @@ class plenum {
      */
     public function get_mainpage() {
         $form = $this->get_instance()->form ?: get_config('mod_plenum', 'defaultform');
+        if (!get_config("plenumform_$form", 'enabled')) {
+            return new \mod_plenum\output\main($this->get_context(), $this->cm, $this->instance);
+        }
         $classname = "plenumform_$form\\output\\main";
         $main = new $classname($this->get_context(), $this->cm, $this->instance);
         return $main;

@@ -30,5 +30,5 @@ $plugin->version = 2024100700;
 $plugin->requires = 2024041600;
 $plugin->maturity = MATURITY_BETA;
 $plugin->dependencies = [
-    'plenumtype_open' => ANY_VERSION,
+    'plenumtype_resolve' => ANY_VERSION,
 ];

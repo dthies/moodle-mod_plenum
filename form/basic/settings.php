@@ -28,13 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     // Add plugin settings.
     $name = new lang_string('delay', 'plenumform_basic');
-    $description = new lang_string('delay_help', 'plenumform_basic');
+    $description = new lang_string('delay_desc', 'plenumform_basic');
     $setting = new admin_setting_configtext(
         'plenumform_basic/delay',
         $name,
         $description,
         3,
-        PARAM_INT
+        PARAM_FLOAT
     );
     $settings->add($setting);
 }

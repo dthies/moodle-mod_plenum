@@ -30,16 +30,16 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configtext(
         'plenumform_jitsi/delay',
         new lang_string('delay', 'plenumform_jitsi'),
-        new lang_string('delay_help', 'plenumform_jitsi'),
+        new lang_string('delay_desc', 'plenumform_jitsi'),
         3,
-        PARAM_INT
+        PARAM_FLOAT
     );
     $settings->add($setting);
 
     $setting = new admin_setting_configtext(
         'plenumform_jitsi/server',
         new lang_string('server', 'plenumform_jitsi'),
-        new lang_string('server_help', 'plenumform_jitsi'),
+        new lang_string('server_desc', 'plenumform_jitsi'),
         'meet.jit.si',
         PARAM_HOST
     );
@@ -48,7 +48,7 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configtext(
         'plenumform_jitsi/appid',
         new lang_string('appid', 'plenumform_jitsi'),
-        new lang_string('appid_help', 'plenumform_jitsi'),
+        new lang_string('appid_desc', 'plenumform_jitsi'),
         '',
         PARAM_HOST
     );
@@ -57,7 +57,7 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configtext(
         'plenumform_jitsi/secret',
         new lang_string('secret', 'plenumform_jitsi'),
-        new lang_string('secret_help', 'plenumform_jitsi'),
+        new lang_string('secret_desc', 'plenumform_jitsi'),
         '',
         PARAM_HOST
     );

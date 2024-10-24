@@ -28,6 +28,14 @@ use moodle_url;
  */
 class plenumtype extends base {
     /**
+     * Return URL used for management of plugins of this type.
+     * @return moodle_url
+     */
+    public static function get_manage_url() {
+        return new moodle_url('/admin/settings.php', ['section' => 'manageplenumtypeplugins']);
+    }
+
+    /**
      * Allow uninstall
      *
      * @return bool

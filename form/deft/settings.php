@@ -25,15 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use plenumform_deft\admin\admin_setting_deftconfig;
+
 if ($hassiteconfig) {
     // Add plugin settings.
-    $name = new lang_string('moderate', 'mod_plenum');
-    $description = new lang_string('moderate_help', 'mod_plenum');
-    $setting = new admin_setting_configcheckbox(
-        'plenumform_deft/moderate',
-        $name,
-        $description,
-        1
-    );
-    $settings->add($setting);
+    $settings->add(new admin_setting_deftconfig());
 }
