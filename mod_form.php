@@ -59,7 +59,6 @@ class mod_plenum_mod_form extends moodleform_mod {
 
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('name', 'plenumname', 'mod_plenum');
 
         // Adding the standard "intro" and "introformat" fields.
         $this->standard_intro_elements();

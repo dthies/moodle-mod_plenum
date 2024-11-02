@@ -58,7 +58,7 @@ if ($hassiteconfig) {
         'mod_plenum/defaultgradetype',
         $name,
         $description,
-        GRADE_TYPE_VALUE,
+        GRADE_TYPE_NONE,
         [
                                                         GRADE_TYPE_NONE => new lang_string('modgradetypenone', 'grades'),
                                                         GRADE_TYPE_SCALE => new lang_string('modgradetypescale', 'grades'),

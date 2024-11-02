@@ -62,7 +62,17 @@ $string['missingidandcmid'] = 'Plenary meeting';
 $string['moderate'] = 'Moderate meeting';
 $string['moderate_help'] = 'If set to manual, the president will have to approve motions and speakers, otherwise motions are queued in order received.';
 $string['modulename'] = 'Plenary meeting';
-$string['modulename_help'] = 'Plenary meeting';
+$string['modulename_help'] = 'The Plenary meeting activity module
+organizes online and in person meetings following traditional rules
+of parliamentary procedure. It may be used as a tool to teach skills
+to conduct a meeting or to structure and administer faculty, staff,
+student or other organizational meetings.
+
+Users are granted the privileges to speak, make motions, vote or chair
+meetings through Moodle capabilities and roles. The activity maintains
+a record of motions to provide meeting minutes. User actions are logged
+in Moodle log system.';
+$string['modulename_link'] = 'mod/plenum/view';
 $string['modulenameplural'] = 'Plenary meetings';
 $string['motion_created'] = 'Motion created';
 $string['motion_deleted'] = 'Motion deleted';
@@ -91,7 +101,6 @@ $string['plenum:view'] = 'View';
 $string['plenum_graded'] = 'Plenary meeting graded';
 $string['plenumfieldset'] = 'Plenary';
 $string['plenumname'] = 'Plenary meeting';
-$string['plenumname_help'] = 'A venue to conduct meeting of the full body';
 $string['plenumsettings'] = 'Plenary settings';
 $string['pluginadministration'] = 'Plenary admin';
 $string['pluginname'] = 'Plenary meeting';

@@ -10,8 +10,8 @@ var options = {
     configOverwrite: {
         startWithAudioMuted: true
     },
-    width: 700,
-    height: 700,
+    width: 640,
+    height: 480,
     parentNode: document.querySelector('#meet')
 };
 var domain;
