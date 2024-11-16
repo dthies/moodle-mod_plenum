@@ -31,6 +31,7 @@ use mod_plenum\plenum;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers    \mod_plenum\grades\gradeitems
  * @covers    \mod_plenum\grades\plenum_gradeitem
+ * @group      mod_plenum
  */
 final class plenum_gradeitem_test extends \advanced_testcase {
     /**

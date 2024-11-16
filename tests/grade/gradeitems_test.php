@@ -31,6 +31,7 @@ use coding_exception;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers    \mod_plenum\grades\gradeitems
  * @covers    \mod_plenum\grades\plenum_gradeitem
+ * @group      mod_plenum
  */
 final class gradeitems_test extends advanced_testcase {
     /**

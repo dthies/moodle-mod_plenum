@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Events test.
- *
- * @package    mod_plenum
- * @copyright  2020 Ferran Recio <ferran@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_plenum\event;
 
 use advanced_testcase;
@@ -35,6 +27,7 @@ use context_module;
  * @copyright  2024 Daniel Thies <dethies@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \mod_plenum\event\course_module_viewed
+ * @group      mod_plenum
  */
 final class course_module_viewed_test extends advanced_testcase {
     /**

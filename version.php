@@ -18,7 +18,7 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     mod_plenum
- * @copyright   2023 Daniel Thies <dethies@gmail.com>
+ * @copyright   2023 onward Daniel Thies <dethies@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_plenum';
 $plugin->release = '1.0 Beta';
-$plugin->version = 2024100705;
+$plugin->version = 2024100706;
 $plugin->requires = 2024041600;
 $plugin->maturity = MATURITY_BETA;
 $plugin->dependencies = [

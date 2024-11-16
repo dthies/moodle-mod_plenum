@@ -44,6 +44,7 @@ use course_modinfo;
  * @copyright  2024 Daniel Thies <dethies@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \mod_plenum\external\update_content
+ * @group      mod_plenum
  */
 final class update_content_test extends externallib_advanced_testcase {
     /**

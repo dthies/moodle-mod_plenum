@@ -26,6 +26,7 @@ use context_module;
  * @package    mod_plenum
  * @copyright  2024 Daniel Thiess
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      mod_plenum
  */
 final class lib_test extends advanced_testcase {
     /**

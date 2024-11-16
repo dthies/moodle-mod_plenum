@@ -14,16 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * External function test for view_module.
- *
- * @package    mod_plenum
- * @category   external
- * @copyright  2024 Daniel Thies <dethies@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-namespace mod_plenum\external;
+namespace plenumform_jitsi\external;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,30 +29,30 @@ use context_module;
 use course_modinfo;
 
 /**
- * External function test for view_module
+ * External function test for raise_hand
  *
- * @package    mod_plenum
+ * @package    plenumform_jitsi
  * @copyright  2024 Daniel Thies <dethies@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers     \mod_plenum\external\view_module
+ * @covers     \plenumform_jitsi\external\raise_hand
  * @group      mod_plenum
  */
-final class view_module_test extends externallib_advanced_testcase {
+final class raise_hand_test extends externallib_advanced_testcase {
     /**
-     * Test test_view_module invalid id.
+     * Test test_raise_hand invalid id.
      */
-    public function test_view_module_invalid_id(): void {
+    public function test_raise_hand_invalid_id(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
 
         $this->expectException('moodle_exception');
-        view_module::execute(0);
+        raise_hand::execute(0, true);
     }
 
     /**
-     * Test test_view_module user not enrolled.
+     * Test test_raise_hand user not enrolled.
      */
-    public function test_view_module_user_not_enrolled(): void {
+    public function test_raise_hand_user_not_enrolled(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -74,13 +65,13 @@ final class view_module_test extends externallib_advanced_testcase {
         $usernotenrolled = self::getDataGenerator()->create_user();
         $this->setUser($usernotenrolled);
         $this->expectException('moodle_exception');
-        view_module::execute($context->id);
+        raise_hand::execute($context->id, true);
     }
 
     /**
-     * Test test_view_module user student.
+     * Test test_raise_hand user student.
      */
-    public function test_view_module_user_student(): void {
+    public function test_raise_hand_user_student(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -94,8 +85,8 @@ final class view_module_test extends externallib_advanced_testcase {
         $sink = $this->redirectEvents();
 
         $context = context_module::instance($cm->id);
-        $result = view_module::execute($context->id);
-        $result = external_api::clean_returnvalue(view_module::execute_returns(), $result);
+        $result = raise_hand::execute($context->id, true);
+        $result = external_api::clean_returnvalue(raise_hand::execute_returns(), $result);
         $this->assertTrue($result['status']);
 
         $events = $sink->get_events();
@@ -103,18 +94,22 @@ final class view_module_test extends externallib_advanced_testcase {
         $event = array_shift($events);
 
         // Checking that the event contains the expected values.
-        $this->assertInstanceOf('\mod_plenum\event\course_module_viewed', $event);
+        $this->assertInstanceOf('\plenumform_jitsi\event\raise_hand_updated', $event);
         $this->assertEquals($scenario->contextmodule, $event->get_context());
-        $plenum = new \moodle_url('/mod/plenum/view.php', ['id' => $cm->id]);
+        $plenum = new \moodle_url('/mod/plenum/view.php', ['p' => $cm->instance]);
         $this->assertEquals($plenum, $event->get_url());
         $this->assertEventContextNotUsed($event);
         $this->assertNotEmpty($event->get_name());
+
+        $data = $event->get_data();
+        $this->assertEquals($scenario->student->id, $data['userid']);
+        $this->assertEquals(1, $data['other']['raisehand']);
     }
 
     /**
-     * Test test_view_module user missing capabilities.
+     * Test test_raise_hand user missing capabilities.
      */
-    public function test_view_module_user_missing_capabilities(): void {
+    public function test_raise_hand_user_missing_capabilities(): void {
         global $DB;
 
         $this->resetAfterTest();
@@ -135,7 +130,7 @@ final class view_module_test extends externallib_advanced_testcase {
 
         $this->setUser($scenario->student);
         $this->expectException('moodle_exception');
-        view_module::execute($context->id);
+        raise_hand::execute($context->id, true);
     }
 
     /**

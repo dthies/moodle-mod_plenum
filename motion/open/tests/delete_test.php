@@ -25,6 +25,7 @@ use mod_plenum\motion;
  * @package    plenumtype_open
  * @copyright  2024 Daniel Thiess
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      mod_plenum
  */
 final class delete_test extends advanced_testcase {
     /**

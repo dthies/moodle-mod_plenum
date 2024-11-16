@@ -31,6 +31,7 @@ require_once($CFG->libdir . "/phpunit/classes/restore_date_testcase.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \backup_plenum_activity_structure_step
  * @covers     \restore_plenum_activity_structure_step
+ * @group      mod_plenum
  */
 final class restore_date_test extends \restore_date_testcase {
     /**

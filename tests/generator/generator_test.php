@@ -24,6 +24,7 @@ namespace mod_plenum;
  * @copyright  2024 Daniel Thies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \mod_plenum_generator
+ * @group      mod_plenum
  */
 class generator_test extends \advanced_testcase {
     /**

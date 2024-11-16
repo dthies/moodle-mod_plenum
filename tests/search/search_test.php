@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Assign search unit tests.
- *
- * @package     mod_plenum
- * @category    test
- * @copyright   2016 Eric Merrill {@link http://www.merrilldigital.com}
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_plenum\search;
 
 defined('MOODLE_INTERNAL') || die();
@@ -39,6 +30,7 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
  * @copyright   2024 Daniel Thies <dethies@gmail.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers      \mod_plenum\search\motion
+ * @group      mod_plenum
  */
 final class search_test extends \advanced_testcase {
     /**

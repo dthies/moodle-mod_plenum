@@ -30,6 +30,7 @@ use mod_plenum\motion;
  * @covers     \mod_plenum\event\motion_deleted
  * @covers     \mod_plenum\event\motion_updated
  * @covers     \mod_plenum\event\motion_viewed
+ * @group      mod_plenum
  */
 final class motion_events_test extends advanced_testcase {
     /**
