@@ -58,6 +58,7 @@ $string['manageplenumtypeplugins'] = 'Manage motion plugins';
 $string['manual'] = 'Manual';
 $string['meetingform'] = 'Meeting form';
 $string['meetingform_help'] = 'Choose a form to use for meeting. These options determine some of the rules to be used and how discussion takes place (e.g. in person or video assisted).';
+$string['messageprovider:motions'] = 'Motion update';
 $string['missingidandcmid'] = 'Plenary meeting';
 $string['moderate'] = 'Moderate meeting';
 $string['moderate_help'] = 'If set to manual, the president will have to approve motions and speakers, otherwise motions are queued in order received.';

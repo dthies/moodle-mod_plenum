@@ -37,6 +37,9 @@ if ($id) {
     $classname = "plenumtype_$type\\output\\main";
     $moduleinstance = $DB->get_record('plenum', ['id' => $motion->get('plenum')], '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('plenum', $moduleinstance->id, $moduleinstance->course, false, MUST_EXIST);
+    if (optional_param('redirect', false, PARAM_BOOL) && $motion->get('status') == motion::STATUS_PENDING) {
+        redirect(new moodle_url('/mod/plenum/view.php', ['id' => $cm->id]));
+    }
 } else {
     $cmid = required_param('cmid', PARAM_INT);
     $cm = get_coursemodule_from_id('plenum', $cmid, null, false, MUST_EXIST);

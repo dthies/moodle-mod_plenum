@@ -45,6 +45,7 @@ final class delete_test extends advanced_testcase {
     public function test_plenum_delete_instance(): void {
         global $DB;
         $this->resetAfterTest();
+        set_config('mod_plenum_motions_disable', 1, 'message');
         $this->setAdminUser();
 
         $course = $this->getDataGenerator()->create_course();

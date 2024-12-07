@@ -24,6 +24,7 @@
 
 namespace mod_plenum;
 
+use core_user;
 use mod_plenum\base_type;
 use cache;
 use completion_info;
@@ -574,5 +575,50 @@ class motion extends persistent implements renderable, templatable {
         foreach (self::get_records(['groupid' => $hook->groupinstance->id]) as $motion) {
             $motion->delete();
         }
+    }
+
+    /**
+     * Sender user notification regarding motion
+     *
+     * @param stdClass $user User record to receive notivication
+     * @param string $text message to send
+     * @return mixed the integer ID of the new message or false if there
+     * was a problem (with submitted data or sending the message to the message processor)
+     */
+    public function send_notification(stdClass $user, string $text = ''): int|bool {
+        global $OUTPUT;
+
+        $message = new \core\message\message();
+        $message->component = 'mod_plenum';
+        $message->name = 'motions';
+        $message->userto = $user;
+        $message->userfrom = core_user::get_noreply_user();
+        $message->subject = get_string('pluginname', 'plenumtype_' . $this->get('type'));
+        $message->fullmessage = $text;
+        $message->fullmessageformat = FORMAT_MOODLE;
+        $usercreated = core_user::get_user($this->get('usercreated'));
+        $usercreated->fullname = fullname($usercreated);
+        $message->fullmessagehtml = $OUTPUT->render_from_template('mod_plenum/message', [
+            'message' => format_text($text, FORMAT_MOODLE, [
+                'context' => $this->get_context(),
+            ]),
+            'meetingurl' => (new \moodle_url('/mod/plenum/view.php', [
+                'id' => $this->get_context()->instanceid,
+            ]))->out(false),
+            'motionurl' => (new \moodle_url('/mod/plenum/motion.php', [
+                'id' => $this->get('id'),
+            ]))->out(false),
+            'title' => get_string('pluginname', 'plenumtype_' . $this->get('type')),
+            'user' => $usercreated,
+        ]);
+        $message->smallmessage = $text;
+        $message->notification = 1;
+        $message->contexturl = (new \moodle_url('/mod/plenum/motion.php', [
+            'id' => $this->get('id'),
+            'redirect' => 1,
+        ]))->out(false);
+        $message->contexturlname = 'Motion';
+
+        return message_send($message);
     }
 }

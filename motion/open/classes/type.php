@@ -73,4 +73,35 @@ class type extends base_type {
             return $motion->delete();
         }, $motion->get_descendants());
     }
+
+    /**
+     * Change the status of the motion
+     *
+     * @param int $state
+     */
+    public function change_status(int $state) {
+        global $DB, $USER;
+
+        parent::change_status($state);
+
+        if ($this->motion->get('status') == motion::STATUS_PENDING) {
+            $context = $this->get_context();
+            $cminfo = \cm_info::create(get_coursemodule_from_instance('plenum', $this->motion->get('plenum')));
+            if (!$cminfo->visible) {
+                return;
+            }
+            $groupmode = groups_get_activity_groupmode($cminfo);
+            $message = get_string('meetingopened', 'plenumtype_open', $cminfo->name);
+            $users = get_enrolled_users($context);
+            foreach ($users as $user) {
+                if (
+                    ($groupmode != SEPARATEGROUPS)
+                    || has_capability('moodle/site:accessallgroups', $context)
+                    || groups_is_member($user->id, $this->motion->get($groupid))
+                ) {
+                    $this->motion->send_notification($user, $message);
+                }
+            }
+        }
+    }
 }
