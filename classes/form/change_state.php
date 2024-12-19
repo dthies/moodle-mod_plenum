@@ -25,11 +25,9 @@
 namespace mod_plenum\form;
 
 use context;
-use context_user;
 use core_form\dynamic_form;
 use core_user;
 use mod_plenum\motion;
-use moodle_exception;
 use moodle_url;
 
 /**

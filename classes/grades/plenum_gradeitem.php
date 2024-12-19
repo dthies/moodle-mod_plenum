@@ -21,8 +21,6 @@ namespace mod_plenum\grades;
 use coding_exception;
 use core_grades\component_gradeitem;
 use context;
-use core_grades\component_gradeitem as gradeitem_base;
-use mod_plenum\local\container as plenum_container;
 use mod_plenum\plenum;
 use required_capability_exception;
 use stdClass;

@@ -16,14 +16,7 @@
 
 namespace mod_plenum;
 
-use cache;
-use cm_info;
-use context_module;
-use moodleform;
 use MoodleQuickForm;
-use moodle_url;
-use stdClass;
-use mod_plenum\motion;
 
 /**
  * Class handling options for Plenary meeting plugin
