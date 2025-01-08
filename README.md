@@ -11,7 +11,7 @@ a record of motions to provide meeting minutes. User actions are logged
 in Moodle log system.
 
 The activity can be used with an in person event or as an online
-event. It has a integration with Deft response block to allow audio and
+event. It has an integration with Deft response block to allow audio and
 video to be shared based on whether the user is recognized to speak in
 the activity. Other web conference or media servers also can be used as
 long as users can be managed by them manually. A minimal integration is

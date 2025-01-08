@@ -147,6 +147,11 @@ const raiseHand = (e) => {
     }])[0];
 };
 
+/**
+ * Handle button click
+ *
+ * @param {Event} e Click event
+ */
 const handleClick = e => {
     const button = e.target.closest('button[data-action="joinroom"]');
 

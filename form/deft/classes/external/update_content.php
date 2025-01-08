@@ -92,40 +92,6 @@ class update_content extends external_api {
         $controls = $OUTPUT->render_from_template('plenumform_deft/controls', [
             'sharevideo' => $canshare,
             'issharingvideo' => $issharingvideo,
-            'toggles' => [
-                [
-                    'id' => 'stopvideo',
-                    'checked' => $issharingvideo,
-                    'dataattributes' => [
-                        ['name' => 'contextid', 'value' => $context->id],
-                        ['name' => 'action', 'value' => $issharingvideo ? 'unpublish' : 'publish'],
-                    ],
-                    'disabled' => !$canshare,
-                    'title' => get_string('stopvideo', 'plenumform_deft'),
-                    'label' => get_string('stopvideo', 'plenumform_deft'),
-                ],
-                [
-                    'id' => 'enableaudio',
-                    'checked' => false,
-                    'dataattributes' => [
-                        ['name' => 'contextid', 'value' => $context->id],
-                        ['name' => 'action', 'value' => 'enableaudio'],
-                    ],
-                    'title' => get_string('enableaudio', 'plenumform_deft'),
-                    'label' => get_string('enableaudio', 'plenumform_deft'),
-                ],
-                [
-                    'id' => 'disableaudio',
-                    'checked' => true,
-                    'dataattributes' => [
-                        ['name' => 'contextid', 'value' => $context->id],
-                        ['name' => 'action', 'value' => 'disableaudio'],
-                    ],
-                    'extraclasses' => 'hidden',
-                    'title' => get_string('disableaudio', 'plenumform_deft'),
-                    'label' => get_string('disableaudio', 'plenumform_deft'),
-                ],
-            ],
         ]);
 
         $js = '';
