@@ -77,6 +77,12 @@ const handleClick = function(e) {
                 formClass: `plenumtype_${type}\\form\\edit_motion`,
                 modalConfig: {title: getString('editingmotiontype', `plenumtype_${type}`)}
             });
+            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+                const motionCreated = new CustomEvent('motioncreated', {
+                    detail: e.detail
+                });
+                document.body.dispatchEvent(motionCreated);
+            });
             modalForm.show();
         } else if (['adopt', 'allow', 'decline', 'deny'].includes(action)) {
             const id = e.target.closest('[data-motion]').getAttribute('data-motion');
@@ -88,6 +94,12 @@ const handleClick = function(e) {
                 },
                 formClass: 'mod_plenum\\form\\change_state',
                 modalConfig: {title: getString('confirm')}
+            });
+            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+                const motionUpdated = new CustomEvent('motionupdated', {
+                    detail: e.detail
+                });
+                document.body.dispatchEvent(motionUpdated);
             });
             modalForm.show();
         } else if (action == 'close') {

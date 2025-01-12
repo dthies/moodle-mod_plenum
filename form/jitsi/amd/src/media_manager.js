@@ -58,13 +58,11 @@ export default class MediaManager {
             options.jwt = jwt;
         }
 
-        if (!delay) {
-            return false;
+        if (delay) {
+            setInterval(() => {
+                this.updateMotions(contextid);
+            }, delay);
         }
-
-        setInterval(() => {
-            this.updateMotions(contextid);
-        }, delay);
 
         document.addEventListener('click', handleClick);
 
