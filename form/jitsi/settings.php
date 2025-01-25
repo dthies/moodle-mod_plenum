@@ -27,6 +27,20 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
     // Add plugin settings.
+    $setting = new admin_setting_heading(
+        'plenumform_jitsi/description',
+        new lang_string('description'),
+        html_writer::div(new lang_string('pluginhelp', 'plenumform_jitsi'), 'alert alert-info')
+    );
+    $settings->add($setting);
+
+    $setting = new admin_setting_heading(
+        'plenumform_jitsi/connetionconfig',
+        new lang_string('connectionconfiguration', 'plenumform_jitsi'),
+        ''
+    );
+    $settings->add($setting);
+
     $setting = new admin_setting_configtext(
         'plenumform_jitsi/delay',
         new lang_string('delay', 'plenumform_jitsi'),
@@ -60,6 +74,35 @@ if ($hassiteconfig) {
         new lang_string('secret_desc', 'plenumform_jitsi'),
         '',
         PARAM_HOST
+    );
+    $settings->add($setting);
+
+    $setting = new admin_setting_heading(
+        'plenumform_jitsi/uiconfig',
+        new lang_string('uiconfiguration', 'plenumform_jitsi'),
+        ''
+    );
+    $settings->add($setting);
+
+    $options = [
+        'camera',
+        'chat',
+        'fullscreen',
+        'hangup',
+        'microphone',
+        'participants-pane',
+        'raisehand',
+        'select-background',
+        'settings',
+        'tileview',
+        'videoquality',
+    ];
+    $setting = new admin_setting_configmultiselect(
+        'plenumform_jitsi/toolbar',
+        new lang_string('toolbar', 'plenumform_jitsi'),
+        new lang_string('toolbar_desc', 'plenumform_jitsi'),
+        ['camera', 'hangup', 'microphone', 'raisehand'],
+        array_combine($options, $options)
     );
     $settings->add($setting);
 }

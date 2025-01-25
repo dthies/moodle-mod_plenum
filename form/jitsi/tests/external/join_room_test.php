@@ -103,6 +103,26 @@ final class join_room_test extends externallib_advanced_testcase {
 
         $data = $event->get_data();
         $this->assertEquals($scenario->student->id, $data['userid']);
+
+        // Stop video.
+        $result = join_room::execute($context->id, false);
+        $result = external_api::clean_returnvalue(join_room::execute_returns(), $result);
+        $this->assertTrue($result['status']);
+
+        $events = $sink->get_events();
+        $this->assertCount(2, $events);
+        $event = array_pop($events);
+
+        // Checking that the event contains the expected values.
+        $this->assertInstanceOf('\plenumform_jitsi\event\video_ended', $event);
+        $this->assertEquals($scenario->contextmodule, $event->get_context());
+        $plenum = new \moodle_url('/mod/plenum/view.php', ['p' => $cm->instance]);
+        $this->assertEquals($plenum, $event->get_url());
+        $this->assertEventContextNotUsed($event);
+        $this->assertNotEmpty($event->get_name());
+
+        $data = $event->get_data();
+        $this->assertEquals($scenario->student->id, $data['userid']);
     }
 
     /**

@@ -38,7 +38,11 @@ if ($id) {
     $moduleinstance = $DB->get_record('plenum', ['id' => $motion->get('plenum')], '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('plenum', $moduleinstance->id, $moduleinstance->course, false, MUST_EXIST);
     if (optional_param('redirect', false, PARAM_BOOL) && $motion->get('status') == motion::STATUS_PENDING) {
-        redirect(new moodle_url('/mod/plenum/view.php', ['id' => $cm->id]));
+        $url = new moodle_url('/mod/plenum/view.php', ['id' => $cm->id]);
+        if ($motion->get('groupid')) {
+            $url->param('group', $motion->get('groupid'));
+        }
+        redirect($url);
     }
 } else {
     $cmid = required_param('cmid', PARAM_INT);

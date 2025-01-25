@@ -26,10 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $callbacks = [
     [
-        'hook' => plenumtype_open\hook\after_data::class,
-        'callback' => 'plenumform_jitsi2\options::form_elements',
-    ],
-    [
         'hook' => mod_plenum\hook\after_motion_updated::class,
         'callback' => 'plenumform_jitsi2\options::after_motion_updated',
     ],

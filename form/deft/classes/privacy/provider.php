@@ -28,9 +28,11 @@ namespace plenumform_deft\privacy;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
-use core_privacy\local\request\userlist;
 use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\helper;
+use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
+use core_privacy\local\request\userlist;
 
 /**
  * Privacy Subsystem implementation for plenumform_deft.
@@ -53,10 +55,11 @@ class provider implements
             'plenumform_deft_peer',
             [
                 'usermodified' => 'privacy:metadata:plenumform_deft_peer:usermodified',
+                'status' => 'privacy:metadata:plenumform_deft_peer:status',
                 'timecreated' => 'privacy:metadata:plenumform_deft_peer:timecreated',
                 'timemodified' => 'privacy:metadata:plenumform_deft_peer:timemodified',
+                'motion' => 'privacy:metadata:plenumform_deft_peer:motion',
                 'mute' => 'privacy:metadata:plenumform_deft_peer:mute',
-                'status' => 'privacy:metadata:plenumform_deft_peer:status',
                 'type' => 'privacy:metadata:plenumform_deft_peer:type',
                 'uuid' => 'privacy:metadata:plenumform_deft_peer:uuid',
             ],
@@ -77,9 +80,10 @@ class provider implements
 
         $sql = "SELECT c.id
                   FROM {context} c
-                  JOIN {plenumform_deft_peer} p ON p.plenum = c.instanceid
+                  JOIN {course_modules} cm ON cm.id = c.instanceid
+                  JOIN {plenumform_deft_peer} p ON p.plenum = cm.instance
                  WHERE c.contextlevel = :contextlevel
-                   AND usermodified = :userid";
+                   AND p.usermodified = :userid";
         $params = [
             'contextlevel' => CONTEXT_MODULE,
             'userid' => $userid,
@@ -100,7 +104,8 @@ class provider implements
 
         $sql = "SELECT p.usermodified
                   FROM {plenumform_deft_peer} p
-                  JOIN {context} c ON p.plenum = c.instanceid
+                  JOIN {course_modules} cm ON p.plenum = cm.instance
+                  JOIN {context} c ON cm.id = c.instanceid
                  WHERE c.contextlevel = :contextlevel
                    AND c.id = :contextid";
         $params = [
@@ -121,27 +126,97 @@ class provider implements
 
         $user = $contextlist->get_user();
         $contexts = $contextlist->get_contexts();
-        foreach ($contexts as $context) {
-            if (
-                $context->contextlevel != CONTEXT_MODULE
-            ) {
-                continue;
+
+        // Remove contexts different from CONTEXT_MODULE.
+        $contexts = array_reduce($contextlist->get_contexts(), function ($carry, $context) {
+            if ($context->contextlevel == CONTEXT_MODULE) {
+                $carry[] = $context->id;
             }
-            if (
-                $records = $DB->get_records('plenumform_deft_peer', [
-                    'plenum' => $context->instanceid,
-                    'usermodified' => $user->id,
-                ], 'id', 'id, mute, status, timecreated, timemodified, type')
-            ) {
-                foreach ($records as $record) {
-                    $record->timecreated = \core_privacy\local\request\transform::datetime($record->timecreated);
-                    $record->timemodified = \core_privacy\local\request\transform::datetime($record->timemodified);
-                }
-                writer::with_context($context)->export_data([
-                    get_string('privacy:connections', 'plenumform_deft'),
-                ], (object)$records);
-            }
+            return $carry;
+        }, []);
+
+        if (empty($contexts)) {
+            return;
         }
+
+        // Get peer data.
+        [$insql, $inparams] = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
+        $sql = "SELECT p.id,
+                       p.status,
+                       p.mute,
+                       p.timecreated,
+                       p.timemodified,
+                       p.type,
+                       p.usermodified,
+                       cm.id AS cmid,
+                       ctx.id as contextid
+                  FROM {plenumform_deft_peer} p
+                  JOIN {course_modules} cm ON cm.instance = p.plenum
+                  JOIN {modules} m ON m.id = cm.module
+                  JOIN {context} ctx ON ctx.instanceid = cm.id
+                 WHERE ctx.id $insql
+                       AND p.usermodified = :usermodified
+                       AND m.name = 'plenum'
+              ORDER BY cmid, p.timecreated";
+        $params = array_merge($inparams, [
+            'usermodified' => $user->id,
+        ]);
+
+        $peerdata = [];
+        $peers = $DB->get_recordset_sql($sql, $params);
+
+        $lastcmid = null;
+        foreach ($peers as $peer) {
+            if ($lastcmid != $peer->cmid) {
+                if (!empty($peerdata)) {
+                    $context = \context_module::instance($lastcmid);
+                    self::export_peer_data_for_user($peerdata, $context, $user);
+                }
+                $peerdata = [
+                    'connections' => [],
+                    'cmid' => $peer->cmid,
+                ];
+                $lastcmid = $peer->cmid;
+            }
+            $peerdata['connections'][] = (object)[
+                'status' => $peer->status,
+                'usermodified' => $peer->usermodified,
+                'timecreated' => transform::datetime($peer->timecreated),
+                'timemodified' => transform::datetime($peer->timemodified),
+                'type' => $peer->type,
+                'mute' => $peer->mute,
+            ];
+        }
+
+        // Write last activity.
+        if (!empty($peerdata)) {
+            $context = \context_module::instance($lastcmid);
+            self::export_peer_data_for_user($peerdata, $context, $user);
+        }
+
+        $peers->close();
+    }
+
+    /**
+     * Export the supplied personal data for a single plenary meeting activity, along with any generic data or area files.
+     *
+     * @param array $peerdata the personal data to export for the meeting.
+     * @param \context_module $context the context of the meeting.
+     * @param \stdClass $user the user record
+     */
+    protected static function export_peer_data_for_user(array $peerdata, \context_module $context, \stdClass $user) {
+        // Fetch the generic module data for the plenary meeting.
+        $contextdata = helper::get_context_data($context, $user);
+        writer::with_context($context)->export_data([], $contextdata);
+
+        // Merge with peer data and write it.
+        $contextdata = (object)array_merge((array)$contextdata, $peerdata);
+        writer::with_context($context)->export_data([
+            get_string('privacy:connections', 'plenumform_deft'),
+        ], $contextdata);
+
+        // Write generic module intro files.
+        helper::export_context_files($context, $user);
     }
 
     /**
@@ -155,10 +230,12 @@ class provider implements
         if (!$context instanceof \context_module) {
             return;
         }
+
+        $cm = get_coursemodule_from_id('plenum', $context->instanceid, MUST_EXIST);
         $DB->delete_records(
             'plenumform_deft_peer',
             [
-                'plenum' => $context->instanceid,
+                'plenum' => $cm->instance,
             ]
         );
     }
@@ -180,11 +257,12 @@ class provider implements
         $userids = $userlist->get_userids();
         [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'params', true, true);
 
-        $DB->delete_records(
+        $cm = get_coursemodule_from_id('plenum', $context->instanceid, MUST_EXIST);
+        $DB->delete_records_select(
             'plenumform_deft_peer',
             "usermodified $usersql AND plenum = :instanceid",
             [
-                'instanceid' => $context->instanceid,
+                'instanceid' => $cm->instance,
             ] + $userparams
         );
     }
@@ -205,14 +283,23 @@ class provider implements
 
         $instanceids = [];
         foreach ($contextlist->get_contexts() as $context) {
-            if ($context instanceof \context_module) {
-                $instanceids[] = $context->instanceid;
-            }
+            $contextids[] = $context->id;
         }
-        if (empty($instanceids)) {
+        [$sql, $params] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED);
+
+        $ids = $DB->get_fieldset_sql(
+            "SELECT cm.instance
+               FROM {context} c
+               JOIN {course_modules} cm ON cm.id = c.instanceid
+               JOIN {modules} m ON m.id = cm.module
+              WHERE m.name = 'plenum' AND c.contextlevel = :contextlevel AND c.id $sql",
+            $params + ['contextlevel' => CONTEXT_MODULE]
+        );
+
+        if (empty($ids)) {
             return;
         }
-        [$sql, $params] = $DB->get_in_or_equal($instanceids, SQL_PARAMS_NAMED);
+        [$sql, $params] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
 
         $DB->delete_records_select(
             'plenumform_deft_peer',

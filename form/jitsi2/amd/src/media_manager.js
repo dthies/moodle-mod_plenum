@@ -23,6 +23,7 @@
 var domain;
 
 import Ajax from "core/ajax";
+import {get_string as getString} from "core/str";
 import JitsiMeetJS from "plenumform_jitsi2/lib-jitsi-meet.min";
 import Notification from "core/notification";
 import Templates from "core/templates";
@@ -98,6 +99,12 @@ export default class MediaManager {
             );
 
             this.room.join();
+        });
+        this.connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, () => {
+            Notification.alert(
+                getString('disconnected', 'plenumform_jitsi2'),
+                getString('disconnectedmessage', 'plenumform_jitsi2')
+            );
         });
 
         this.connection.connect();

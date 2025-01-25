@@ -10,12 +10,14 @@ meetings through Moodle capabilities and roles. The activity maintains
 a record of motions to provide meeting minutes. User actions are logged
 in Moodle log system.
 
-The activity can be used with an in person event or as an online
-event. It has an integration with Deft response block to allow audio and
-video to be shared based on whether the user is recognized to speak in
-the activity. Other web conference or media servers also can be used as
-long as users can be managed by them manually. A minimal integration is
-provided for Jitsi meet.
+The activity can be used with an in person event or as an online event. It
+has an integration with Deft response block to allow audio and video to be
+shared based on whether the user is recognized to speak in the activity.
+Two integrations for Jitsi meet are included. One simply embeds a Jitsi
+Meet room in the activity and handles user authentication. The other
+uses Jitsi media server as a back end to provide an experience similar to the
+Deft plugin.  Other web conference or media servers also can be used as
+long as users can be managed by them manually.
 
 ## Installing via uploaded ZIP file ##
 
@@ -76,3 +78,6 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Some libraries (Jitsi javascript libraries) are covered by Apache 2.0
+license which is permitted inclusion in GPL version 3 projects.

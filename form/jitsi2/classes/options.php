@@ -55,20 +55,6 @@ class options extends options_base {
      * @param after_data $hook Hook for open motion definition
      */
     public static function form_elements(after_data $hook) {
-        $mform = $hook->get_form();
-
-        $cm = $hook->get_coursemodule();
-
-        if (
-            ($cm->customdata['form'] != 'jitsi2')
-            || groups_get_activity_groupmode($cm) == NOGROUPS
-        ) {
-            return;
-        }
-
-        $mform->addElement('text', 'room', get_string('room', 'plenumform_jitsi2'));
-        $mform->setType('room', PARAM_TEXT);
-        $mform->addHelpButton('room', 'room', 'plenumform_jitsi2');
     }
 
     /**

@@ -29,5 +29,12 @@ use plenumform_deft\admin\admin_setting_deftconfig;
 
 if ($hassiteconfig) {
     // Add plugin settings.
+    $setting = new admin_setting_heading(
+        'plenumform_deft/description',
+        new lang_string('description'),
+        html_writer::div(new lang_string('pluginhelp', 'plenumform_deft'), 'alert alert-info')
+    );
+    $settings->add($setting);
+
     $settings->add(new admin_setting_deftconfig());
 }

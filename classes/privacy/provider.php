@@ -34,6 +34,7 @@ use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
+use mod_plenum\motion;
 
 /**
  * Privacy Subsystem implementation for mod_plenum.
@@ -189,8 +190,10 @@ class provider implements
             return;
         }
 
+        // Export module data.
         $user = $contextlist->get_user();
         $userid = $user->id;
+
         // Get motion data.
         [$insql, $inparams] = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
         $sql = "SELECT pm.id,
@@ -224,16 +227,17 @@ class provider implements
                     c.id AS contextid,
                     pg.grade AS grade,
                     p.grade AS gradetype,
-                    p.feedback,
-                    p.feedbackformat
+                    pg.feedback,
+                    pg.feedbackformat
                   FROM {context} c
                   JOIN {course_modules} cm ON cm.id = c.instanceid
+                  JOIN {modules} m ON m.id = cm.module
                   JOIN {plenum} p ON p.id = cm.instance
                   JOIN {plenum_grades} pg ON pg.plenum = p.id
-                 WHERE (
+                 WHERE
+                    m.name = 'plenum' AND
                     pg.userid = :userid AND
                     c.id {$insql}
-                )
         ";
         $params['userid'] = $userid;
         $grades = $DB->get_records_sql_menu($sql, $params);
@@ -277,9 +281,7 @@ class provider implements
                   FROM {context} c
                   JOIN {course_modules} cm ON cm.id = c.instanceid
                   JOIN {plenum} p ON p.id = cm.instance
-                 WHERE (
-                    c.id {$insql}
-                )
+                 WHERE c.id {$insql}
         ";
 
         $plenums = $DB->get_recordset_sql($sql, $inparams);
@@ -293,13 +295,14 @@ class provider implements
     /**
      * Export the supplied personal data for a single plenary meeting activity, along with any generic data or area files.
      *
-     * @param array $motiondata the personal data to export for the choice.
-     * @param \context_module $context the context of the choice.
+     * @param array $motiondata the personal data to export for the meeting.
+     * @param \context_module $context the context of the meeting.
      * @param \stdClass $user the user record
      */
     protected static function export_motion_data_for_user(array $motiondata, \context_module $context, \stdClass $user) {
         // Fetch the generic module data for the plenary meeting.
         $contextdata = helper::get_context_data($context, $user);
+        writer::with_context($context)->export_data([], $contextdata);
 
         // Merge with motion data and write it.
         $contextdata = (object)array_merge((array)$contextdata, $motiondata);
@@ -320,24 +323,16 @@ class provider implements
         global $DB;
 
         // Get the course module.
-        if (!$cm = get_coursemodule_from_id('forum', $context->instanceid)) {
+        if (
+            (!$context instanceof \context_module)
+            || !$cm = get_coursemodule_from_id('plenum', $context->instanceid)
+        ) {
             return;
         }
 
-        $DB->delete_records_select(
-            'plenum_motion',
-            "plenum IN (
-                SELECT cm.instance
-                  FROM {course_module}
-                  JOIN {module} m ON m.id = cm.module
-                  JOIN {context} c ON c.instanceid = cm.id
-                 WHERE c.contextlevel = :contextlevel
-                   AND c.id = :contextid",
-            [
-                'contextlevel' => CONTEXT_MODULE,
-                'contextid' => $context->id,
-            ]
-        );
+        foreach (motion::get_records(['plenum' => $cm->instance]) as $motion) {
+            $motion->delete();
+        }
 
         // Delete advanced grading information.
         $gradingmanager = get_grading_manager($context, 'mod_plenum', 'plenum');
@@ -364,37 +359,22 @@ class provider implements
         $userids = $userlist->get_userids();
         [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
 
-        $params = [
-            'contextlevel' => CONTEXT_MODULE,
-            'contextid' => $context->id,
-            'modulename' => 'plenum',
-        ] + $userparams;
-        $DB->delete_records_select(
-            'plenum_motion',
-            "status = 0 AND plenum IN (
-                SELECT cm.instance
-                  FROM {course_module}
-                  JOIN {module} m ON m.id = cm.module
-                  JOIN {context} c ON c.instanceid = cm.id
-                 WHERE c.contextlevel = :contextlevel
-                   AND c.id = :contextid
-                   AND m.name = :modulename
-             ) AND usercreated $usersql",
-            $params
+        $cm = get_coursemodule_from_id('plenum', $context->instanceid);
+        $motions = motion::get_records_select(
+            "status = 0 AND usercreated $usersql AND plenum = :plenum",
+            ['plenum' => $cm->instance] + $userparams
         );
+        foreach ($motions as $motion) {
+            $motion->delete();
+        }
 
         // Delete advanced grading information.
-        $sql = "plenum IN (
-                SELECT cm.instance
-                  FROM {course_module}
-                  JOIN {module} m ON m.id = cm.module
-                  JOIN {context} c ON c.instanceid = cm.id
-                 WHERE c.contextlevel = :contextlevel
-                   AND c.id = :contextid
-                   AND m.name = :modulename
-             ) AND userid $usersql";
-        $grades = $DB->get_records_select('plenum_grades', $sql, $params);
-        $DB->delete_records_select('plenum_grades', $sql, $params);
+        $grades = $DB->get_records(
+            'plenum_grades',
+            "plenum = :plenum AND userid $usersql",
+            ['plenum' => $cm->instance] + $userparams
+        );
+        $DB->delete_records('plenum_grades', "plenum = :plenum AND userid $usersql", ['plenum' => $cm->instance] + $userparams);
         $gradeids = array_keys($grades);
         $gradingmanager = get_grading_manager($context, 'mod_plenum', 'plenum');
         $controller = $gradingmanager->get_active_controller();
@@ -426,36 +406,30 @@ class provider implements
         }
         [$sql, $params] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED);
 
-        $params += [
-            'contextlevel' => CONTEXT_MODULE,
-            'userid' => $userid,
-            'modulename' => 'plenum',
-        ];
-        $DB->delete_records_select(
-            'plenum_motion',
-            "status = 0 AND plenum IN (
-                SELECT cm.instance
-                  FROM {course_module}
-                  JOIN {module} m ON m.id = cm.module
-                  JOIN {context} c ON c.instanceid = cm.id
-                 WHERE c.contextlevel = :contextlevel
-                   AND c.id $sql
-                   AND m.name = :modulename
-             ) AND userid = :userid",
-            $params
+        $ids = $DB->get_fieldset_sql(
+            "SELECT cm.instance
+               FROM {context} c
+               JOIN {course_modules} cm ON cm.id = c.instanceid
+               JOIN {modules} m ON m.id = cm.module
+              WHERE m.name = 'plenum' AND c.contextlevel = :contextlevel AND c.id $sql",
+            $params + ['contextlevel' => CONTEXT_MODULE]
         );
 
+        if (empty($ids)) {
+            return;
+        }
+        [$sql, $params] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+
+        $motions = motion::get_records_select(
+            "status = 0 AND plenum $sql AND usercreated = :userid",
+            $params + ['userid' => $userid]
+        );
+        foreach ($motions as $motion) {
+            $motion->delete();
+        }
+
         // Handle any advanced grading method data first.
-        $sql = "plenum IN (
-                SELECT cm.instance
-                  FROM {course_module}
-                  JOIN {module} m ON m.id = cm.module
-                  JOIN {context} c ON c.instanceid = cm.id
-                 WHERE c.contextlevel = :contextlevel
-                   AND c.id $sql
-                   AND m.name = :modulename
-             ) AND userid = :userid";
-        $grades = $DB->get_records('plenum_grades', $sql, $params);
+        $grades = $DB->get_records_select('plenum_grades', "plenum $sql AND userid = :userid", $params + ['userid' => $userid]);
         $gradingmanager = get_grading_manager($context, 'plenum_grades', 'plenum');
         $controller = $gradingmanager->get_active_controller();
         foreach ($grades as $grade) {
@@ -465,7 +439,7 @@ class provider implements
             }
         }
         // Advanced grading methods have been cleared, lets clear our module now.
-        $DB->delete_records('plenum_grades', $sql, $params);
+        $DB->delete_records_select('plenum_grades', "plenum $sql AND userid = :userid", $params + ['userid' => $userid]);
     }
 
     /**

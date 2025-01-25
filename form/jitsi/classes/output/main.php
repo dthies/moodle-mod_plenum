@@ -32,6 +32,7 @@ use renderable;
 use renderer_base;
 use stdClass;
 use templatable;
+use user_picture;
 use mod_plenum\motion;
 use mod_plenum\output\motions;
 
@@ -56,13 +57,41 @@ class main extends \mod_plenum\output\main {
         return [
             'chair' => has_capability('mod/plenum:preside', $this->context),
             'delay' => get_config('plenumform_jitsi', 'delay') * 1000,
-            'email' => $USER->email,
-            'fullname' => fullname($USER),
-            'jwt' => $this->get_jwt(),
-            'room' => $this->get_room(),
+            'options' => $this->get_options(),
             'server' => get_config('plenumform_jitsi', 'server'),
-            'throttle' => get_config('block_deft', 'throttle'),
+            'width' => (int)get_config('plenumform_jitsi', 'width'),
         ] + $motions->export_for_template($output) + parent::export_for_template($output);
+    }
+
+    /**
+     * Get Jitsi meet room options
+     *
+     * @return string JSON string
+     */
+    protected function get_options() {
+        global $USER;
+
+        $options = [
+            'jwt' => $this->get_jwt(),
+            'server' => get_config('plenumform_jitsi', 'server'),
+            'roomName' => $this->get_room(),
+            'configOverwrite' => [
+                'hideConferenceSubject' => true,
+                'lobby' => ['autoknock' => true],
+                'startWithAudioMuted' => true,
+                'startWithVideoMuted' => true,
+                'readOnlyName' => true,
+                'toolbarButtons' => explode(',', get_config('plenumform_jitsi', 'toolbar')),
+            ],
+            'securityUI' => ['hideLobbyButton' => true],
+            'height' => '56.25vw',
+            'userInfo' => [
+                'displayName' => fullname($USER),
+                'email' => $USER->email,
+            ],
+        ];
+
+        return json_encode($options);
     }
 
     /**
@@ -70,18 +99,17 @@ class main extends \mod_plenum\output\main {
      *
      * @return string
      */
-    protected function get_room() {
-        global $DB;
+    protected function get_room(string $type = 'main') {
+        global $CFG, $DB;
 
         if (
             groups_get_activity_groupmode($this->cm)
-            && ($pendingmotions = motion::get_pending($this->context))
-            && $room = array_pop($pendingmotions)->get_data()->room ?? ''
         ) {
-            return $room;
+            $groupid = groups_get_activity_group($this->cm);
+            return md5("$CFG->wwwroot mod {$this->cm->instance} group {$groupid} type $type");
         }
 
-        return $DB->get_field('plenumform_jitsi', 'room', ['plenum' => $this->cm->instance]);
+        return md5("$CFG->wwwroot mod {$this->cm->instance}");
     }
 
     /**
@@ -90,7 +118,9 @@ class main extends \mod_plenum\output\main {
      * @return string
      */
     protected function get_jwt() {
-        global $USER;
+        global $OUTPUT, $PAGE, $USER;
+
+        $userpicture = new user_picture($USER, ['size' => 256]);
 
         $header = json_encode([
             "alg" => "HS256",
@@ -104,11 +134,12 @@ class main extends \mod_plenum\output\main {
                     'id' => $USER->username,
                     'name' => fullname($USER),
                     'email' => $USER->email,
+                    'avatar' => $userpicture->get_url($PAGE, $OUTPUT)->out(false),
+                    'moderator' => has_capability('mod/plenum:preside', $this->context),
                 ],
             ],
             'exp' => time() + DAYSECS,
             'iss' => get_config('plenumform_jitsi', 'appid'),
-            'moderator' => has_capability('mod/plenum:preside', $this->context),
             'sub' => get_config('plenumform_jitsi', 'server'),
             'room' => $this->get_room(),
         ], JSON_UNESCAPED_SLASHES);
@@ -132,10 +163,5 @@ class main extends \mod_plenum\output\main {
      * @param MoodleQuickForm $mform Form to which to add fields
      */
     public static function create_settings_elements(MoodleQuickForm $mform) {
-        $mform->insertElementBefore(
-            $mform->createElement('text', 'room', get_string('room', 'plenumform_jitsi')),
-            'addformoptionshere'
-        );
-        $mform->setType('room', PARAM_ALPHA);
     }
 }

@@ -83,17 +83,14 @@ class main extends \mod_plenum\output\main {
      * @return string
      */
     protected function get_room() {
-        global $DB;
-
         if (
             groups_get_activity_groupmode($this->cm)
-            && ($pendingmotions = motion::get_pending($this->context))
-            && $room = array_pop($pendingmotions)->get_data()->room ?? ''
         ) {
-            return $room;
+            $groupid = groups_get_activity_group($this->cm);
+            return "mod{$this->cm->course}group{$groupid}";
         }
 
-        return $DB->get_field('plenumform_jitsi2', 'room', ['plenum' => $this->cm->instance]);
+        return "mod{$this->cm->course}";
     }
 
     /**
@@ -144,10 +141,5 @@ class main extends \mod_plenum\output\main {
      * @param MoodleQuickForm $mform Form to which to add fields
      */
     public static function create_settings_elements(MoodleQuickForm $mform) {
-        $mform->insertElementBefore(
-            $mform->createElement('text', 'room', get_string('room', 'plenumform_jitsi2')),
-            'addformoptionshere'
-        );
-        $mform->setType('room', PARAM_ALPHA);
     }
 }

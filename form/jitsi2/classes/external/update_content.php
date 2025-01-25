@@ -71,19 +71,31 @@ class update_content extends external_api {
 
         $pending = motion::immediate_pending($context);
         $floor = empty($pending) ? 0 : $pending->get('usercreated');
+        $groupid = empty($pending) ? 0 : $pending->get('groupid');
 
         $hasfloor = ($floor == $USER->id);
         $canshare = has_capability('mod/plenum:meet', $context)
-            &&  has_capability('plenumform/deft:sharevideo', $context)
+            && !empty($pending)
+            && has_capability('plenumform/deft:sharevideo', $context)
             && (
                 has_capability('mod/plenum:preside', $context)
                 || $hasfloor
             );
-        $issharingvideo = $canshare && $DB->get_record('plenumform_jitsi2_speaker', [
+        $issharingvideo = $canshare && $DB->get_record_sql(
+            "SELECT s.*
+               FROM {plenumform_jitsi2_speaker} s
+               JOIN {plenum_motion} m ON s.motion = m.id
+              WHERE m.groupid = :groupid
+                    AND s.status = :status
+                    AND s.plenum = :plenum
+                    AND s.usermodified = :usermodified",
+            [
             'plenum' => $plenum->get_id(),
             'status' => 0,
+            'groupid' => $groupid,
             'usermodified' => $USER->id,
-        ]);
+            ]
+        );
         $controls = $OUTPUT->render_from_template('plenumform_jitsi2/controls', [
             'sharevideo' => $canshare,
             'issharingvideo' => $issharingvideo,
@@ -128,17 +140,27 @@ class update_content extends external_api {
     protected static function userinfo($plenum, $pending): array {
         global $DB, $OUTPUT, $PAGE;
 
-        $records = $DB->get_records('plenumform_jitsi2_speaker', [
+        $groupid = empty($pending) ? 0 : $pending->get('groupid');
+        $records = $DB->get_records_sql(
+            "SELECT s.*
+               FROM {plenumform_jitsi2_speaker} s
+               JOIN {plenum_motion} m ON m.id = s.motion
+              WHERE m.groupid = :groupid
+                    AND s.plenum = :plenum
+                    AND s.status = :status",
+            [
             'plenum' => $plenum->get_id(),
+            'groupid' => $groupid,
             'status' => 0,
-        ]);
+            ]
+        );
 
         $speakers = [];
 
         foreach ($records as $record) {
             $user = core_user::get_user($record->usermodified);
             $userpicture = new user_picture($user);
-            $speakers[$record->role] = [
+            $speakers[(string)$record->role] = [
                 'role' => $record->role ? 'chair' : 'speaker',
                 'id' => $record->jitsiuserid,
                 'name' => fullname($user),

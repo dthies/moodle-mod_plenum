@@ -32,14 +32,18 @@
        "instance": {
            "name": "Meeting"
        },
-       "delay": 3000
+       "delay": 3000,
+       "options": "{}"
     }
 
 }}
 {{# instance }}
     {{< mod_plenum/main }}
         {{$ formcontent }}
-            <button data-action="joinroom">{{# str }} joinroom, plenumform_jitsi {{/ str }}</button>
+            <div class="m-3 col col-12">
+                <div class="alert alert-info">{{# str }} joinmessage, plenumform_jitsi {{/ str }}</div>
+                <button data-action="joinroom" class="btn btn-primary">{{# str }} joinroom, plenumform_jitsi {{/ str }}</button>
+            </div>
             <div id="meet" class="col col-12 text-center m-2"></div>
         {{/ formcontent }}
     {{/ mod_plenum/main }}
@@ -48,6 +52,6 @@
     require([
         'plenumform_jitsi/media_manager'
     ], function(MediaManager) {
-        new MediaManager({{ contextid }}, {{ delay }}, '{{ server }}', '{{ room }}', {displayName: '{{ fullname }}', email: '{{ email }}'}, '{{ jwt }}');
+        new MediaManager({{ contextid }}, {{ delay }}, '{{ server }}', {{{ options }}});
     });
 {{/ js }}

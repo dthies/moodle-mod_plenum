@@ -66,6 +66,7 @@ class join_room extends external_api {
         $context = context::instance_by_id($contextid);
         [$course, $cm] = get_course_and_cm_from_cmid($context->instanceid, 'plenum');
         self::validate_context($context);
+        require_capability('mod/plenum:meet', $context);
 
         $params = [
             'context' => $context,

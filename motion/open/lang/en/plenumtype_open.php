@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['createmotion'] = 'A session or group of meetings is opened by a chair that can preside. The session may be paused or stopped with a motion to adjourn. Are you ready to start the session?';
 $string['editingmotiontype'] = 'Opening a new session';
+$string['groupmeetingopened'] = 'A session was opened in activity "{$a->activity}" for members of "{$a->group}".';
 $string['meetingopened'] = 'A session was opened in activity "{$a}".';
 $string['name'] = 'Open';
 $string['open:delete'] = 'Delete sessions';

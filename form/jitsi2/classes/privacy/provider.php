@@ -18,26 +18,322 @@
  * Privacy Subsystem implementation for plenumform_jitsi2.
  *
  * @package    plenumform_jitsi2
- * @copyright  2024 Daniel Thies <dethies@gmail.com>
+ * @category   privacy
+ * @copyright  2024 Daniel Thies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace plenumform_jitsi2\privacy;
 
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\helper;
+use core_privacy\local\request\transform;
+use core_privacy\local\request\writer;
+
 /**
- * The plenumform_jitsi2 module does not store any data.
+ * Privacy Subsystem implementation for plenumform_jitsi2.
  *
- * @package    plenumform_jitsi2
- * @copyright  2024 Daniel Thies <dethies@gmail.com>
+ * @copyright  2024 Daniel Thies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\null_provider {
+class provider implements
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\plugin\provider {
     /**
-     * Get the language string identifier with the component's language
-     * file to explain why this plugin stores no data.
+     * Returns meta data about this system.
      *
-     * @return  string
+     * @param collection $collection
+     * @return collection
      */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+    public static function get_metadata(collection $collection): collection {
+        $collection->add_database_table(
+            'plenumform_jitsi2_speaker',
+            [
+                'motion' => 'privacy:metadata:plenumform_jitsi2_speaker:motion',
+                'role' => 'privacy:metadata:plenumform_jitsi2_speaker:role',
+                'status' => 'privacy:metadata:plenumform_jitsi2_speaker:status',
+                'timecreated' => 'privacy:metadata:plenumform_jitsi2_speaker:timecreated',
+                'timemodified' => 'privacy:metadata:plenumform_jitsi2_speaker:timemodified',
+                'usermodified' => 'privacy:metadata:plenumform_jitsi2_speaker:usermodified',
+            ],
+            'privacy:metadata:plenumform_jitsi2_speaker'
+        );
+
+        return $collection;
+    }
+
+    /**
+     * Get the list of contexts that contain user information for the specified user.
+     *
+     * @param int $userid
+     * @return contextlist
+     */
+    public static function get_contexts_for_userid(int $userid): contextlist {
+        $contextlist = new contextlist();
+
+        $sql = "SELECT c.id
+                  FROM {context} c
+                  JOIN {course_modules} cm ON cm.id = c.instanceid
+                  JOIN {plenumform_jitsi2_speaker} p ON p.plenum = cm.instance
+                 WHERE c.contextlevel = :contextlevel
+                   AND p.usermodified = :userid";
+        $params = [
+            'contextlevel' => CONTEXT_MODULE,
+            'userid' => $userid,
+        ];
+
+        $contextlist->add_from_sql($sql, $params);
+
+        return $contextlist;
+    }
+
+    /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        $sql = "SELECT p.usermodified
+                  FROM {plenumform_jitsi2_speaker} p
+                  JOIN {course_modules} cm ON p.plenum = cm.instance
+                  JOIN {context} c ON cm.id = c.instanceid
+                 WHERE c.contextlevel = :contextlevel
+                   AND c.id = :contextid";
+        $params = [
+            'contextlevel' => CONTEXT_MODULE,
+            'contextid' => $context->id,
+        ];
+
+        $userlist->add_from_sql('usermodified', $sql, $params);
+    }
+
+    /**
+     * Export all user data for the specified user, in the specified contexts.
+     *
+     * @param approved_contextlist $contextlist
+     */
+    public static function export_user_data(approved_contextlist $contextlist) {
+        global $DB;
+
+        $user = $contextlist->get_user();
+        $contexts = $contextlist->get_contexts();
+
+        // Remove contexts different from CONTEXT_MODULE.
+        $contexts = array_reduce($contextlist->get_contexts(), function ($carry, $context) {
+            if ($context->contextlevel == CONTEXT_MODULE) {
+                $carry[] = $context->id;
+            }
+            return $carry;
+        }, []);
+
+        if (empty($contexts)) {
+            return;
+        }
+
+        // Get speaker data.
+        [$insql, $inparams] = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
+        $sql = "SELECT p.id,
+                       p.status,
+                       p.timecreated,
+                       p.timemodified,
+                       p.role,
+                       p.usermodified,
+                       cm.id AS cmid,
+                       ctx.id as contextid
+                  FROM {plenumform_jitsi2_speaker} p
+                  JOIN {course_modules} cm ON cm.instance = p.plenum
+                  JOIN {modules} m ON m.id = cm.module
+                  JOIN {context} ctx ON ctx.instanceid = cm.id
+                 WHERE ctx.id $insql
+                       AND p.usermodified = :usermodified
+                       AND m.name = 'plenum'
+              ORDER BY cmid, p.timecreated";
+        $params = array_merge($inparams, [
+            'usermodified' => $user->id,
+        ]);
+
+        $speakerdata = [];
+        $speakers = $DB->get_recordset_sql($sql, $params);
+
+        $lastcmid = null;
+        foreach ($speakers as $speaker) {
+            if ($lastcmid != $speaker->cmid) {
+                if (!empty($speakerdata)) {
+                    $context = \context_module::instance($lastcmid);
+                    self::export_speaker_data_for_user($speakerdata, $context, $user);
+                }
+                $speakerdata = [
+                    'connections' => [],
+                    'cmid' => $speaker->cmid,
+                ];
+                $lastcmid = $speaker->cmid;
+            }
+            $speakerdata['connections'][] = (object)[
+                'status' => $speaker->status,
+                'usermodified' => $speaker->usermodified,
+                'timecreated' => transform::datetime($speaker->timecreated),
+                'timemodified' => transform::datetime($speaker->timemodified),
+                'role' => $speaker->role,
+            ];
+        }
+
+        // Write last activity.
+        if (!empty($speakerdata)) {
+            $context = \context_module::instance($lastcmid);
+            self::export_speaker_data_for_user($speakerdata, $context, $user);
+        }
+
+        $speakers->close();
+    }
+
+    /**
+     * Export the supplied personal data for a single plenary meeting activity, along with any generic data or area files.
+     *
+     * @param array $speakerdata the personal data to export for the meeting.
+     * @param \context_module $context the context of the meeting.
+     * @param \stdClass $user the user record
+     */
+    protected static function export_speaker_data_for_user(array $speakerdata, \context_module $context, \stdClass $user) {
+        // Fetch the generic module data for the plenary meeting.
+        $contextdata = helper::get_context_data($context, $user);
+        writer::with_context($context)->export_data([], $contextdata);
+
+        // Merge with speaker data and write it.
+        $contextdata = (object)array_merge((array)$contextdata, $speakerdata);
+        writer::with_context($context)->export_data([
+            get_string('privacy:connections', 'plenumform_jitsi2'),
+        ], $contextdata);
+
+        // Write generic module intro files.
+        helper::export_context_files($context, $user);
+    }
+
+    /**
+     * Export all user data for the specified user, in the specified contexts.
+     *
+     * @param approved_contextlist $contextlist
+     */
+    public static function oldexport_user_data(approved_contextlist $contextlist) {
+        global $DB;
+
+        $user = $contextlist->get_user();
+        $contexts = $contextlist->get_contexts();
+        foreach ($contexts as $context) {
+            if (
+                $context->contextlevel != CONTEXT_MODULE
+                || !$cm = get_coursemodule_from_id('plenum', $context->instanceid)
+            ) {
+                continue;
+            }
+            if (
+                $records = $DB->get_records('plenumform_jitsi2_speaker', [
+                    'plenum' => $cm->instance,
+                    'usermodified' => $user->id,
+                ], 'id', 'id, motion, status, timecreated, timemodified, role')
+            ) {
+                $plenumdata = helper::get_context_data($context, $user);
+                writer::with_context($context)->export_data([], $plenumdata);
+
+                foreach ($records as $record) {
+                    $record->timecreated = \core_privacy\local\request\transform::datetime($record->timecreated);
+                    $record->timemodified = \core_privacy\local\request\transform::datetime($record->timemodified);
+                }
+
+                // Merge with motion data and write it.
+                $contextdata = (object)array_merge((array)$contextdata, ['speeches' => $records]);
+                writer::with_context($context)->export_data([
+                    get_string('privacy:connections', 'plenumform_jitsi2'),
+                ], $contextdata);
+            }
+        }
+    }
+
+    /**
+     * Delete all data for all users in the specified context.
+     *
+     * @param \context $context
+     */
+    public static function delete_data_for_all_users_in_context(\context $context) {
+        global $DB;
+
+        if (!$context instanceof \context_module) {
+            return;
+        }
+
+        $cm = get_coursemodule_from_id('plenum', $context->instanceid, MUST_EXIST);
+        $DB->delete_records(
+            'plenumform_jitsi2_speaker',
+            [
+                'plenum' => $cm->instance,
+            ]
+        );
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        \core_comment\privacy\provider::delete_comments_for_users($userlist, 'plenumform_jitsi2');
+
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_module) {
+            return;
+        }
+
+        $userids = $userlist->get_userids();
+        [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'params', true, true);
+
+        $cm = get_coursemodule_from_id('plenum', $context->instanceid, MUST_EXIST);
+
+        $DB->delete_records(
+            'plenumform_jitsi2_speaker',
+            "usermodified $usersql AND plenum = :instanceid",
+            [
+                'instanceid' => $cm->instance,
+            ] + $userparams
+        );
+    }
+
+    /**
+     * Delete all user data for the specified user, in the specified contexts.
+     *
+     * @param approved_contextlist $contextlist
+     */
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
+        global $DB;
+
+        if (empty($contextlist->count())) {
+            return;
+        }
+
+        $userid = $contextlist->get_user()->id;
+
+        $instanceids = [];
+        foreach ($contextlist->get_contexts() as $context) {
+            if ($context instanceof \context_module) {
+                $cm = get_coursemodule_from_id('plenum', $context->instanceid, MUST_EXIST);
+                $instanceids[] = $cm->instance;
+            }
+        }
+        if (empty($instanceids)) {
+            return;
+        }
+        [$sql, $params] = $DB->get_in_or_equal($instanceids, SQL_PARAMS_NAMED);
+
+        $DB->delete_records_select(
+            'plenumform_jitsi2_speaker',
+            "plenum $sql AND usermodified = :usermodified",
+            ['usermodified' => $userid] + $params
+        );
     }
 }

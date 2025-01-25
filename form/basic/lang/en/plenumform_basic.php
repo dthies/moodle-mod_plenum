@@ -27,5 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['delay'] = 'Delay';
 $string['delay_desc'] = 'Time to wait before updating content in seconds. Increase to reduce server load. Decrease to make more responsive.';
+$string['pluginhelp'] = 'The Basic meeting form can be used for in persom meetings or where participants have an external means of communication.';
 $string['pluginname'] = 'Basic meeting';
 $string['privacy:metadata'] = 'The Basic meeting plugin does not store any personal data.';

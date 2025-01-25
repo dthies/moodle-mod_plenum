@@ -27,6 +27,20 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
     // Add plugin settings.
+    $setting = new admin_setting_heading(
+        'plenumform_jitsi2/description',
+        new lang_string('description'),
+        html_writer::div(new lang_string('pluginhelp', 'plenumform_jitsi2'), 'alert alert-info')
+    );
+    $settings->add($setting);
+
+    $setting = new admin_setting_heading(
+        'plenumform_jitsi2/connetionconfig',
+        new lang_string('connectionconfiguration', 'plenumform_jitsi2'),
+        ''
+    );
+    $settings->add($setting);
+
     $setting = new admin_setting_configtext(
         'plenumform_jitsi2/delay',
         new lang_string('delay', 'plenumform_jitsi2'),
@@ -40,7 +54,7 @@ if ($hassiteconfig) {
         'plenumform_jitsi2/server',
         new lang_string('server', 'plenumform_jitsi2'),
         new lang_string('server_desc', 'plenumform_jitsi2'),
-        'meet.jit.si',
+        '',
         PARAM_HOST
     );
     $settings->add($setting);

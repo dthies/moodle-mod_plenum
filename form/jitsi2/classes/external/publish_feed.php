@@ -92,10 +92,34 @@ class publish_feed extends external_api {
         } else if ($publish) {
             $timenow = time();
             $role = has_capability('mod/plenum:preside', $context) ? 1 : 0;
-            $DB->set_field('plenumform_jitsi2_speaker', 'status', 1, [
-                'role' => $role,
-                'plenum' => $cm->instance,
+            $records = $DB->get_records_sql(
+                "SELECT s.* FROM {plenumform_jitsi2_speaker} s
+                   JOIN {plenum_motion} m ON m.id = s.motion
+                  WHERE m.groupid = groupid
+                        AND s.status = :status
+                        AND s.plenum = :plenum",
+                [
+                    'role' => $role,
+                    'groupid' => $motion->get('groupid'),
+                    'plenum' => $cm->instance,
+                    'status' => 0,
+                ]
+            );
+            foreach ($records as $record) {
+                $record->timemodified = time();
+                $record->status = 1;
+                $DB->update_record('plenumform_jitsi2_speaker', $record);
+            }
+
+            $records = $DB->get_records('plenumform_jitsi2_speaker', [
+                'usermodified' => $USER->id,
+                'status' => 0,
             ]);
+            foreach ($records as $record) {
+                $record->timemodified = $timenow;
+                $record->status = 1;
+                $DB->update_record('plenumform_jitsi2_speaker', $record);
+            }
 
             $speakerid = $DB->insert_record('plenumform_jitsi2_speaker', [
                 'plenum' => $cm->instance,
@@ -103,6 +127,7 @@ class publish_feed extends external_api {
                 'usermodified' => $USER->id,
                 'timecreated' => $timenow,
                 'timemodified' => $timenow,
+                'motion' => $motion->get('id'),
                 'status' => 0,
                 'role' => $role,
             ]);

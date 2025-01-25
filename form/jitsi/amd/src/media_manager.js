@@ -20,15 +20,8 @@
  * @copyright  2023 Daniel Thies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-var options = {
-    configOverwrite: {
-        startWithAudioMuted: true
-    },
-    width: 640,
-    height: 480,
-    parentNode: document.querySelector('#meet')
-};
 var domain;
+var conferenceOptions;
 
 import Ajax from "core/ajax";
 import JitsiMeetExternalAPI from "plenumform_jitsi/external_api";
@@ -42,21 +35,16 @@ export default class MediaManager {
      * @param {int} contextid
      * @param {int} delay
      * @param {string} server Jitsi server to use
-     * @param {string} room Room name
-     * @param {object} userinfo User information to pass to meeting
-     * @param {string} jwt JWT authentication token
+     * @param {object} options Room options
      *
      * @returns {bool}
      */
-    constructor(contextid, delay, server, room, userinfo, jwt) {
+    constructor(contextid, delay, server, options) {
         this.contextid = contextid;
-        domain = server;
-        options.userInfo = userinfo;
-        options.roomName = room;
+        options.parentNode = document.querySelector('#meet');
         options.contextid = contextid;
-        if (jwt) {
-            options.jwt = jwt;
-        }
+        conferenceOptions = options;
+        domain = server;
 
         if (delay) {
             setInterval(() => {
@@ -64,7 +52,26 @@ export default class MediaManager {
             }, delay);
         }
 
-        document.addEventListener('click', handleClick);
+        document.addEventListener('click', handleClick.bind(this));
+
+        document.body.addEventListener(
+            'motioncreated',
+            () => {
+                this.updateMotions(this.contextid);
+                if (this.api) {
+                    this.api.executeCommand('sendEndpointTextMessage', '', 'text');
+                }
+            }
+        );
+        document.body.addEventListener(
+            'motionupdated',
+            () => {
+                this.updateMotions(this.contextid);
+                if (this.api) {
+                    this.api.executeCommand('sendEndpointTextMessage', '', 'text');
+                }
+            }
+        );
 
         return true;
     }
@@ -98,13 +105,14 @@ export default class MediaManager {
  *
  * @return {Promise}
  */
-const register = () => {
+const register = function() {
+
     return Ajax.call([{
         args: {
-            contextid: Number(options.contextid),
+            contextid: Number(conferenceOptions.contextid),
             join: true
         },
-        contextid: options.contextid,
+        contextid: conferenceOptions.contextid,
         fail: Notification.exception,
         methodname: 'plenumform_jitsi_join_room'
     }])[0];
@@ -115,13 +123,15 @@ const register = () => {
  *
  * @return {Promise}
  */
-const leave = () => {
+const leave = function() {
+    this.api = null;
+
     return Ajax.call([{
         args: {
-            contextid: Number(options.contextid),
+            contextid: Number(conferenceOptions.contextid),
             join: false
         },
-        contextid: options.contextid,
+        contextid: conferenceOptions.contextid,
         fail: Notification.exception,
         methodname: 'plenumform_jitsi_join_room'
     }])[0];
@@ -136,10 +146,10 @@ const leave = () => {
 const raiseHand = (e) => {
     return Ajax.call([{
         args: {
-            contextid: Number(options.contextid),
+            contextid: Number(conferenceOptions.contextid),
             raisehand: !!e.handRaised
         },
-        contextid: options.contextid,
+        contextid: conferenceOptions.contextid,
         fail: Notification.exception,
         methodname: 'plenumform_jitsi_raise_hand'
     }])[0];
@@ -150,20 +160,27 @@ const raiseHand = (e) => {
  *
  * @param {Event} e Click event
  */
-const handleClick = e => {
+const handleClick = function(e) {
     const button = e.target.closest('button[data-action="joinroom"]');
 
     if (button) {
-        const api = new JitsiMeetExternalAPI(domain, options);
-        button.classList.add('hidden');
-        options.parentNode.classList.remove('hidden');
+        const api = new JitsiMeetExternalAPI(domain, conferenceOptions);
+        button.parentNode.classList.add('hidden');
+        conferenceOptions.parentNode.classList.remove('hidden');
         api.addListener('readyToClose', () => {
-            button.classList.remove('hidden');
-            options.parentNode.classList.add('hidden');
+            button.parentNode.classList.remove('hidden');
+            conferenceOptions.parentNode.classList.add('hidden');
             api.dispose();
         });
-        api.addListener('videoConferenceJoined', register);
-        api.addListener('videoConferenceLeft', leave);
+        api.addListener('videoConferenceJoined', () => {
+            register.bind(this);
+            this.api = api;
+        });
+
+        api.addListener('endpointTextMessageReceived', () => {
+            this.updateMotions(this.contextid);
+        });
+        api.addListener('videoConferenceLeft', leave.bind(this));
         api.addListener('raiseHandUpdated', raiseHand);
     }
 };

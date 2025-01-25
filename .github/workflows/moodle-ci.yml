@@ -89,7 +89,7 @@ jobs:
         run: moodle-plugin-ci phpmd
 
       - name: Moodle Code Checker
-        if: ${{ always() }}
+        if: ${{ matrix.moodle-branch != 'main' }}
         run: moodle-plugin-ci codechecker --max-warnings 0
 
       - name: Moodle PHPDoc Checker

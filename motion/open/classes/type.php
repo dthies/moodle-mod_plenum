@@ -91,7 +91,15 @@ class type extends base_type {
                 return;
             }
             $groupmode = groups_get_activity_groupmode($cminfo);
-            $message = get_string('meetingopened', 'plenumtype_open', $cminfo->name);
+            if ($groupmode == SEPARATEGROUPS) {
+                $group = groups_get_group($this->motion->get('groupid'));
+                $message = get_string('groupmeetingopened', 'plenumtype_open', [
+                    'activity' => $cminfo->name,
+                    'group' => $group->name,
+                ]);
+            } else {
+                $message = get_string('meetingopened', 'plenumtype_open', $cminfo->name);
+            }
             $users = get_enrolled_users($context);
             foreach ($users as $user) {
                 if (
