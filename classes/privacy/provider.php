@@ -34,6 +34,7 @@ use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
+use core_privacy\manager;
 use mod_plenum\motion;
 
 /**
@@ -46,6 +47,9 @@ class provider implements
     \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider {
+    /** Interface for all plenum form sub-plugins. */
+    const PLENUMFORM_INTERFACE = 'mod_plenum\privacy\plenumform_provider';
+
     /**
      * Returns meta data about this system.
      *
@@ -64,6 +68,12 @@ class provider implements
             'timecreated' => 'privacy:metadata:plenum_grades:timecreated',
             'timemodified' => 'privacy:metadata:plenum_grades:timemodified',
         ], 'privacy:metadata:plenum_grades');
+
+        $collection->add_subsystem_link(
+            'core_files',
+            [],
+            'privacy:metadata:core_files'
+        );
 
         return $collection->add_database_table(
             'plenum_motion',
@@ -244,6 +254,7 @@ class provider implements
 
         $lastcmid = null;
         foreach ($motions as $motion) {
+            $path = array_merge([get_string('motions', 'mod_plenum'), $motion->type . " ({$motion->id})"]);
             if ($lastcmid != $motion->cmid) {
                 if (!empty($motiondata)) {
                     $context = \context_module::instance($lastcmid);
@@ -264,6 +275,10 @@ class provider implements
                 'timemodified' => transform::datetime($motion->timemodified),
                 'type' => $motion->type,
             ];
+
+            $context = \context_module::instance($motion->cmid);
+            // Get all files attached to the motion.
+            writer::with_context($context)->export_area_files($path, 'mod_plenum', 'attachments', $motion->id);
         }
 
         // Write last activity.
@@ -309,6 +324,14 @@ class provider implements
         writer::with_context($context)->export_data([
             get_string('privacy:motions', 'mod_plenum'),
         ], $contextdata);
+
+        $cm = get_coursemodule_from_id('plenum', $context->instanceid);
+        manager::plugintype_class_callback(
+            'plenumform',
+            self::PLENUMFORM_INTERFACE,
+            'export_form_user_data',
+            [$cm, $context, $user]
+        );
 
         // Write generic module intro files.
         helper::export_context_files($context, $user);
@@ -358,6 +381,13 @@ class provider implements
 
         $userids = $userlist->get_userids();
         [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+
+        manager::plugintype_class_callback(
+            'plenumform',
+            self::PLENUMFORM_INTERFACE,
+            'delete_data_for_users',
+            [$userlist]
+        );
 
         $cm = get_coursemodule_from_id('plenum', $context->instanceid);
         $motions = motion::get_records_select(
@@ -418,6 +448,14 @@ class provider implements
         if (empty($ids)) {
             return;
         }
+
+        manager::plugintype_class_callback(
+            'plenumform',
+            self::PLENUMFORM_INTERFACE,
+            'delete_data_for_user',
+            [$contextlist]
+        );
+
         [$sql, $params] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
 
         $motions = motion::get_records_select(

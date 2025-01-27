@@ -147,7 +147,10 @@ class janus_room extends janus_room_base {
      * @return string
      */
     public function get_data() {
-        return $this->record->data ?: '{}';
+        if (empty($this->record->data)) {
+            return '{}';
+        }
+        return $this->record->data;
     }
 
     /**

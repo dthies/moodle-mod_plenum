@@ -144,7 +144,7 @@ final class provider_test extends provider_testcase {
         writer::reset();
         $this->setUser($this->users[1]);
         $context = $this->plena[1]->get_context();
-        $component = 'plenumform_jitsi2';
+        $component = 'mod_plenum';
         $writer = writer::with_context($context);
         $this->assertFalse($writer->has_any_data());
 
@@ -241,7 +241,7 @@ final class provider_test extends provider_testcase {
         } else {
             $course = $datagenerator->create_course();
         }
-        $plenum = $datagenerator->create_module('plenum', array_merge($config, ['course' => $course->id]));
+        $plenum = $datagenerator->create_module('plenum', array_merge($config, ['course' => $course->id, 'form' => 'jitsi2']));
         $cm = get_coursemodule_from_instance('plenum', $plenum->id);
         $context = context_module::instance($cm->id);
 

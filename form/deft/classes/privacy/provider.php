@@ -40,10 +40,7 @@ use core_privacy\local\request\userlist;
  * @copyright  2024 Daniel Thies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements
-    \core_privacy\local\request\core_userlist_provider,
-    \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider {
+class provider implements \mod_plenum\privacy\plenumform_provider, \core_privacy\local\metadata\provider {
     /**
      * Returns meta data about this system.
      *
@@ -121,80 +118,32 @@ class provider implements
      *
      * @param approved_contextlist $contextlist
      */
-    public static function export_user_data(approved_contextlist $contextlist) {
+    public static function export_form_user_data($cm, $context, $user) {
         global $DB;
 
-        $user = $contextlist->get_user();
-        $contexts = $contextlist->get_contexts();
-
-        // Remove contexts different from CONTEXT_MODULE.
-        $contexts = array_reduce($contextlist->get_contexts(), function ($carry, $context) {
-            if ($context->contextlevel == CONTEXT_MODULE) {
-                $carry[] = $context->id;
-            }
-            return $carry;
-        }, []);
-
-        if (empty($contexts)) {
-            return;
-        }
-
-        // Get peer data.
-        [$insql, $inparams] = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
-        $sql = "SELECT p.id,
-                       p.status,
-                       p.mute,
-                       p.timecreated,
-                       p.timemodified,
-                       p.type,
-                       p.usermodified,
-                       cm.id AS cmid,
-                       ctx.id as contextid
-                  FROM {plenumform_deft_peer} p
-                  JOIN {course_modules} cm ON cm.instance = p.plenum
-                  JOIN {modules} m ON m.id = cm.module
-                  JOIN {context} ctx ON ctx.instanceid = cm.id
-                 WHERE ctx.id $insql
-                       AND p.usermodified = :usermodified
-                       AND m.name = 'plenum'
-              ORDER BY cmid, p.timecreated";
-        $params = array_merge($inparams, [
+        $peers = $DB->get_records('plenumform_deft_peer', [
+            'plenum' => $cm->instance,
             'usermodified' => $user->id,
         ]);
 
         $peerdata = [];
-        $peers = $DB->get_recordset_sql($sql, $params);
-
-        $lastcmid = null;
         foreach ($peers as $peer) {
-            if ($lastcmid != $peer->cmid) {
-                if (!empty($peerdata)) {
-                    $context = \context_module::instance($lastcmid);
-                    self::export_peer_data_for_user($peerdata, $context, $user);
-                }
-                $peerdata = [
-                    'connections' => [],
-                    'cmid' => $peer->cmid,
-                ];
-                $lastcmid = $peer->cmid;
-            }
+            $peerdata['cmid'] = $cm->id;
             $peerdata['connections'][] = (object)[
+                'motion' => $peer->motion,
+                'mute' => $peer->mute,
                 'status' => $peer->status,
-                'usermodified' => $peer->usermodified,
                 'timecreated' => transform::datetime($peer->timecreated),
                 'timemodified' => transform::datetime($peer->timemodified),
                 'type' => $peer->type,
-                'mute' => $peer->mute,
+                'usermodified' => $peer->usermodified,
             ];
         }
 
-        // Write last activity.
+        // Write the result.
         if (!empty($peerdata)) {
-            $context = \context_module::instance($lastcmid);
             self::export_peer_data_for_user($peerdata, $context, $user);
         }
-
-        $peers->close();
     }
 
     /**
@@ -220,30 +169,9 @@ class provider implements
     }
 
     /**
-     * Delete all data for all users in the specified context.
+     * Get the list of users who have data within a context.
      *
-     * @param \context $context
-     */
-    public static function delete_data_for_all_users_in_context(\context $context) {
-        global $DB;
-
-        if (!$context instanceof \context_module) {
-            return;
-        }
-
-        $cm = get_coursemodule_from_id('plenum', $context->instanceid, MUST_EXIST);
-        $DB->delete_records(
-            'plenumform_deft_peer',
-            [
-                'plenum' => $cm->instance,
-            ]
-        );
-    }
-
-    /**
-     * Delete multiple users within a single context.
-     *
-     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
         \core_comment\privacy\provider::delete_comments_for_users($userlist, 'plenumform_deft');
