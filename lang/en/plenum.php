@@ -107,6 +107,7 @@ $string['pluginadministration'] = 'Plenary admin';
 $string['pluginname'] = 'Plenary meeting';
 $string['potentialmotions'] = 'Potential motions';
 $string['precedingmotion'] = 'Preceding motion';
+$string['privacy:metadata:core_files'] = 'Files attached to motions';
 $string['privacy:metadata:plenum_grades'] = 'Plenary meeting grades';
 $string['privacy:metadata:plenum_grades:feedback'] = 'Feedback text for gradebook.';
 $string['privacy:metadata:plenum_grades:feedbackformat'] = 'Feedback text format for gradebook.';

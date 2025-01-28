@@ -44,15 +44,6 @@ $functions = [
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
 
-    'plenumform_jitsi2_raise_hand' => [
-        'classname' => '\\plenumform_jitsi2\\external\\raise_hand',
-        'methodname' => 'execute',
-        'description' => 'Record hand raise change',
-        'type' => 'write',
-        'ajax' => true,
-        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
-    ],
-
     'plenumform_jitsi2_update_content' => [
         'classname' => '\\plenumform_jitsi2\\external\\update_content',
         'methodname' => 'execute',

@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'plenumform_jitsi';
 $plugin->release = '1.0';
-$plugin->version = 2024100701;
+$plugin->version = 2025012800;
 $plugin->requires = 2024041600;
 $plugin->maturity = MATURITY_STABLE;

@@ -19,7 +19,7 @@
  *
  * @package     plenumform_jitsi2
  * @category    admin
- * @copyright   2023 Daniel Thies <dethies@gmail.com>
+ * @copyright   2025 Daniel Thies <dethies@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

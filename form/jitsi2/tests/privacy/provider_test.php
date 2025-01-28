@@ -161,6 +161,9 @@ final class provider_test extends provider_testcase {
         $this->export_context_data_for_user($this->users[2]->id, $context, $component);
         $this->assertTrue($writer->has_any_data());
 
+        // Validate exported data for user 1.
+        writer::reset();
+        $this->setUser($this->users[2]);
         $this->assertEquals('Plenary meeting 1', $writer->get_data()->name);
         $subcontext = [
             get_string('privacy:connections', 'plenumform_jitsi2'),
@@ -173,6 +176,10 @@ final class provider_test extends provider_testcase {
      * Test for delete_data_for_user().
      */
     public function test_delete_data_for_user(): void {
+        $subcontext = [
+            get_string('privacy:connections', 'plenumform_deft'),
+        ];
+
         // User 1.
         $appctx = new approved_contextlist(
             $this->users[1],
@@ -182,8 +189,8 @@ final class provider_test extends provider_testcase {
         provider::delete_data_for_user($appctx);
 
         provider::export_user_data($appctx);
-        $this->assertTrue(writer::with_context($this->plena[1]->get_context())->has_any_data());
-        $this->assertTrue(writer::with_context($this->plena[2]->get_context())->has_any_data());
+        $this->assertFalse(writer::with_context($this->plena[1]->get_context())->has_any_data($subcontext));
+        $this->assertFalse(writer::with_context($this->plena[2]->get_context())->has_any_data($subcontext));
 
         // User 2.
         writer::reset();
@@ -198,6 +205,9 @@ final class provider_test extends provider_testcase {
         // Motions are not deleted unless they are draft.
         $this->assertTrue(writer::with_context($this->plena[1]->get_context())->has_any_data());
         $this->assertFalse(writer::with_context($this->plena[2]->get_context())->has_any_data());
+
+        // Peer information should be deleted.
+        $this->assertFalse(writer::with_context($this->plena[1]->get_context())->has_any_data($subcontext));
     }
 
     /**
