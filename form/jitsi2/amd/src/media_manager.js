@@ -80,9 +80,6 @@ export default class MediaManager {
                 this.updateMotions(contextid);
             });
 
-
-
-
             document.body.addEventListener(
                 'motioncreated',
                 () => {
