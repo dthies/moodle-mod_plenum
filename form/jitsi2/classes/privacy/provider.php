@@ -114,7 +114,9 @@ class provider implements \mod_plenum\privacy\plenumform_provider, \core_privacy
     /**
      * Export all user data for the specified user, in the specified contexts.
      *
-     * @param approved_contextlist $contextlist
+     * @param stdClass $cm
+     * @param context_module $context
+     * @param stdClass $user
      */
     public static function export_form_user_data($cm, $context, $user) {
         global $DB;

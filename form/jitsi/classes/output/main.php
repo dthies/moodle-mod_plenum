@@ -97,6 +97,7 @@ class main extends \mod_plenum\output\main {
     /**
      * Return the room key
      *
+     * @param string $type Key type
      * @return string
      */
     protected function get_room(string $type = 'main') {

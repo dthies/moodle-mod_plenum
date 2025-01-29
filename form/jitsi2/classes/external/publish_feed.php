@@ -54,9 +54,9 @@ class publish_feed extends external_api {
     /**
      * Publish feed
      *
+     * @param int $contextid Module context id
      * @param string $id Jitsi user id
      * @param bool $publish Whether to publish
-     * @param int $room Room id being joined
      * @return array
      */
     public static function execute($contextid, $id, $publish): array {

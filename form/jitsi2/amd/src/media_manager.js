@@ -76,6 +76,12 @@ export default class MediaManager {
             this.room.addCommandListener('updatecontent', () => {
                 this.updateMotions(contextid);
             });
+            this.room.on(JitsiMeetJS.events.conference.CONFERENCE_JOINED, () => {
+                this.updateMotions(contextid);
+            });
+
+
+
 
             document.body.addEventListener(
                 'motioncreated',

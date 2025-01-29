@@ -17,6 +17,7 @@
 namespace plenumform_jitsi2\external;
 
 use mod_plenum\motion;
+use mod_plenum\plenum;
 use context;
 use context_module;
 use core_external\external_api;
@@ -135,9 +136,11 @@ class update_content extends external_api {
     /**
      * Get speaker infomation
      *
+     * @param plenum $plenum
+     * @param motion|null $pending
      * @return array
      */
-    protected static function userinfo($plenum, $pending): array {
+    protected static function userinfo(plenum $plenum, ?motion $pending): array {
         global $DB, $OUTPUT, $PAGE;
 
         $groupid = empty($pending) ? 0 : $pending->get('groupid');

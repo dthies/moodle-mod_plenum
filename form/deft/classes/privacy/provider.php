@@ -116,7 +116,9 @@ class provider implements \mod_plenum\privacy\plenumform_provider, \core_privacy
     /**
      * Export all user data for the specified user, in the specified contexts.
      *
-     * @param approved_contextlist $contextlist
+     * @param stdClass $cm
+     * @param context_module $context
+     * @param stdClass $user
      */
     public static function export_form_user_data($cm, $context, $user) {
         global $DB;
@@ -171,7 +173,8 @@ class provider implements \mod_plenum\privacy\plenumform_provider, \core_privacy
     /**
      * Get the list of users who have data within a context.
      *
-     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     * @param approved_userlist $userlist The userlist containing the list of users
+     *            who have data in this context/plugin combination.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
         \core_comment\privacy\provider::delete_comments_for_users($userlist, 'plenumform_deft');

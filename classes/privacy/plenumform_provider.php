@@ -40,8 +40,8 @@ interface plenumform_provider extends \core_privacy\local\request\plugin\subplug
     /**
      * Export all user data for the specified user, in the specified contexts.
      *
-     * @param course_module $cm Course module
-     * @param context_module context
+     * @param stdClass $cm Course module
+     * @param context_module $context Course module context
      * @param stdClass $user User record
      */
     public static function export_form_user_data($cm, $context, $user);
@@ -56,7 +56,8 @@ interface plenumform_provider extends \core_privacy\local\request\plugin\subplug
     /**
      * Get the list of users who have data within a context.
      *
-     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     * @param approved_userlist $userlist The userlist containing the list of users who
+     *            have data in this context/plugin combination.
      */
     public static function delete_data_for_users(approved_userlist $userlist);
 }
