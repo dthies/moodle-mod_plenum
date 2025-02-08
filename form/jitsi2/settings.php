@@ -45,7 +45,7 @@ if ($hassiteconfig) {
         'plenumform_jitsi2/delay',
         new lang_string('delay', 'plenumform_jitsi2'),
         new lang_string('delay_desc', 'plenumform_jitsi2'),
-        3,
+        0,
         PARAM_FLOAT
     );
     $settings->add($setting);

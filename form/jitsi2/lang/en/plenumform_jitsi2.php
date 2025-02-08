@@ -29,7 +29,7 @@ $string['appid'] = 'App id';
 $string['appid_desc'] = 'This Jitsi server should be secured so only participants authorized by the activity can participate. The server administrator should set an App ID and secret to use here. See <a href="https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-quickstart/">Jitsi documentation</a> to self host.';
 $string['connectionconfiguration'] = 'Connection configuration';
 $string['delay'] = 'Delay';
-$string['delay_desc'] = 'Time to wait before updating content in seconds. Increase to reduce server load. Decrease to make more responsive.';
+$string['delay_desc'] = 'Update motions if in case Jitsi is not working. Time to wait before updating content in seconds. Increase to reduce server load. Decrease to make more responsive.';
 $string['disconnected'] = 'Disconnected';
 $string['disconnectedmessage'] = 'You have left the room. Reload to reconnect.';
 $string['eventhandraiseupdated'] = 'Hand raise updated';

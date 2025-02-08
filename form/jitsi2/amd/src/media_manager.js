@@ -66,7 +66,9 @@ export default class MediaManager {
             }
         });
         this.connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, () => {
-            this.room = this.connection.initJitsiConference(room, {});
+            this.room = this.connection.initJitsiConference(room, {
+                disableSimulcast: true
+            });
             this.room.addEventListener(JitsiMeetJS.events.conference.TRACK_ADDED, track => {
                 this.onRemoteTrack(track);
             });

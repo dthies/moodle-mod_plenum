@@ -108,6 +108,12 @@ const handleClick = function(e) {
                 formClass: 'mod_plenum\\form\\close_motion',
                 args: {contextid: contextid, id: id, state: action}
             });
+            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+                const motionUpdated = new CustomEvent('motionupdated', {
+                    detail: e.detail
+                });
+                document.body.dispatchEvent(motionUpdated);
+            });
             modalForm.show();
         } else if (action == 'preview') {
             const id = e.target.closest('[data-motion]').getAttribute('data-motion');

@@ -84,7 +84,7 @@ class main extends \mod_plenum\output\main {
                 'toolbarButtons' => explode(',', get_config('plenumform_jitsi', 'toolbar')),
             ],
             'securityUI' => ['hideLobbyButton' => true],
-            'height' => '56.25vw',
+            'height' => '400px',
             'userInfo' => [
                 'displayName' => fullname($USER),
                 'email' => $USER->email,

@@ -73,14 +73,15 @@ class janus_room extends janus_room_base {
     public function __construct(int $id, $groupid = null) {
         global $DB, $USER;
 
-        if (!get_config('block_deft', 'enablebridge')) {
+        $cm = get_coursemodule_from_instance('plenum', $id);
+        $this->context = context_module::instance($cm->id);
+
+        if (empty(get_config('block_deft', 'enablebridge'))) {
             return;
         }
 
         $this->session = new janus();
 
-        $cm = get_coursemodule_from_instance('plenum', $id);
-        $this->context = context_module::instance($cm->id);
         $groupid = $groupid ?? groups_get_activity_group($cm);
 
         if (

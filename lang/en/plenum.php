@@ -17,10 +17,10 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     mod_plenum
- * @category    string
- * @copyright   2023 Daniel Thies <dethies@gmail.com>
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_plenum
+ * @category  string
+ * @copyright 2023 Daniel Thies <dethies@gmail.com>
+ * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -53,6 +53,16 @@ $string['gradeitem:plenum'] = 'Grade meeting';
 $string['gradeitemnameformotion'] = '{$a->name} motion';
 $string['gradeitemnameforplenum'] = '{$a->name} plenum';
 $string['grouprequired'] = 'This activity uses groups. You must select a group to which you have access.';
+$string['indicator:cognitivedepth'] = 'Plenary meeting cognitive';
+$string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a Plenary meeting activity.';
+$string['indicator:cognitivedepthdef'] = 'Plenary meeting cognitive';
+$string['indicator:cognitivedepthdef_help'] = 'The participant has reached this percentage of the cognitive engagement offered by the Plenary meeting activities during this analysis interval (Levels = No view, View, Submit)';
+$string['indicator:cognitivedepthdef_link'] = 'Learning_analytics_indicators#Cognitive_depth';
+$string['indicator:socialbreadth'] = 'Plenary meeting social';
+$string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in a Plenary meeting activity.';
+$string['indicator:socialbreadthdef'] = 'Plenary meeting social';
+$string['indicator:socialbreadthdef_help'] = 'The participant has reached this percentage of the social engagement offered by the Plenary meeting activities during this analysis interval (Levels = No participation, Participant alone, Participant with others)';
+$string['indicator:socialbreadthdef_link'] = 'Learning_analytics_indicators#Social_breadth';
 $string['manageplenumformplugins'] = 'Manage meeting form plugins';
 $string['manageplenumtypeplugins'] = 'Manage motion plugins';
 $string['manual'] = 'Manual';

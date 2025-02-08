@@ -30,6 +30,7 @@ $string['chair'] = 'Chair';
 $string['configurationrequired'] = 'Configuration required';
 $string['configurationstatus'] = 'Configuration status';
 $string['configurationstatus_desc'] = 'The Deft response block needs to be configured with the service from deftly.us for this meeting form to work correctly. The status of this connection is evaluated and displayed here.';
+$string['configurationwarning'] = 'The Deft meeting form is not correctly configured to work with Deft response block. Please ask administrator to check configuration.';
 $string['configuredeftblock'] = 'The <em>Deft response</em> block needs to be configured with "Enable updating" and "Enable video" enabled, and the <a href="https://deftly.us">deftly.us</a> service needs to be activated. <a href="{$a}">Deft response settings</a>.';
 $string['deft:sharevideo'] = 'Share video';
 $string['deft:viewvideo'] = 'View video';
