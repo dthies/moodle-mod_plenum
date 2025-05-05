@@ -20,6 +20,7 @@
  * @copyright  2023 Daniel Thies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+var api;
 var domain;
 var conferenceOptions;
 
@@ -48,57 +49,58 @@ export default class MediaManager {
 
         if (delay) {
             setInterval(() => {
-                this.updateMotions(contextid);
+                updateMotions(contextid);
             }, delay);
         }
 
-        document.addEventListener('click', handleClick.bind(this));
+        document.removeEventListener('click', handleClick);
+        document.addEventListener('click', handleClick);
 
         document.body.addEventListener(
             'motioncreated',
             () => {
-                this.updateMotions(this.contextid);
-                if (this.api) {
-                    this.api.executeCommand('sendEndpointTextMessage', '', 'text');
+                updateMotions(this.contextid);
+                if (api) {
+                    api.executeCommand('sendEndpointTextMessage', '', 'text');
                 }
             }
         );
         document.body.addEventListener(
             'motionupdated',
             () => {
-                this.updateMotions(this.contextid);
-                if (this.api) {
-                    this.api.executeCommand('sendEndpointTextMessage', '', 'text');
+                updateMotions(this.contextid);
+                if (api) {
+                    api.executeCommand('sendEndpointTextMessage', '', 'text');
                 }
             }
         );
 
         return true;
     }
+}
 
-    /**
-     * Update motions
-     *
-     * @param {int} contextid
-     */
-    async updateMotions(contextid) {
-        const selector = `[data-contextid="${contextid}"][data-region="plenum-motions"]`;
-        const content = document.querySelector(selector);
-        if (content) {
-            const response = await Ajax.call([{
-                args: {
-                    contextid: contextid
-                },
-                contextid: contextid,
-                fail: Notification.exception,
-                methodname: 'mod_plenum_update_content'
-            }])[0];
-            if (response.motions) {
-                Templates.replaceNodeContents(content, response.motions, response.javascript);
-            }
+/**
+ * Update motions
+ *
+ * @param {int} contextid
+ */
+const updateMotions = async(contextid) => {
+    const selector = `[data-contextid="${contextid}"][data-region="plenum-motions"]`;
+    const content = document.querySelector(selector);
+    if (content) {
+        const response = await Ajax.call([{
+            args: {
+                contextid: contextid
+            },
+            contextid: contextid,
+            fail: Notification.exception,
+            methodname: 'mod_plenum_update_content'
+        }])[0];
+        if (response.motions) {
+            Templates.replaceNodeContents(content, response.motions, response.javascript);
         }
     }
-}
+};
 
 /**
  * Register joining the room
@@ -124,8 +126,6 @@ const register = function() {
  * @return {Promise}
  */
 const leave = function() {
-    this.api = null;
-
     return Ajax.call([{
         args: {
             contextid: Number(conferenceOptions.contextid),
@@ -164,7 +164,10 @@ const handleClick = function(e) {
     const button = e.target.closest('button[data-action="joinroom"]');
 
     if (button) {
-        const api = new JitsiMeetExternalAPI(domain, conferenceOptions);
+        if (api) {
+            api.dispose();
+        }
+        api = new JitsiMeetExternalAPI(domain, conferenceOptions);
         button.parentNode.classList.add('hidden');
         conferenceOptions.parentNode.classList.remove('hidden');
         api.addListener('readyToClose', () => {
@@ -172,15 +175,12 @@ const handleClick = function(e) {
             conferenceOptions.parentNode.classList.add('hidden');
             api.dispose();
         });
-        api.addListener('videoConferenceJoined', () => {
-            register.bind(this);
-            this.api = api;
-        });
+        api.addListener('videoConferenceJoined', register);
 
         api.addListener('endpointTextMessageReceived', () => {
-            this.updateMotions(this.contextid);
+            updateMotions(conferenceOptions.contextid);
         });
-        api.addListener('videoConferenceLeft', leave.bind(this));
+        api.addListener('videoConferenceLeft', leave);
         api.addListener('raiseHandUpdated', raiseHand);
     }
 };

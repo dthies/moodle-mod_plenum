@@ -27,6 +27,10 @@ import ModalForm from "core_form/modalform";
 import Notification from "core/notification";
 import {get_string as getString} from "core/str";
 
+const SELECTORS = {
+    PREVIEW: '.modal-body [data-region="view-motion"]',
+};
+
 export default class Plenum {
     /**
      * Initialize player plugin
@@ -59,7 +63,9 @@ export default class Plenum {
  */
 const handleClick = function(e) {
     const button = e.target.closest(
-        '[data-region="plenum-motions"][data-contextid] [data-action], .modal-body [data-contextid] [data-action]'
+        '[data-region="plenum-motions"][data-contextid] [data-action],'
+        + ' .modal-body [data-region="view-motion"] [data-action],'
+        + ' .modal-body [data-region="plenum-activity-report"][data-contextid] [data-action]'
     );
     if (button) {
         const action = button.getAttribute('data-action'),
@@ -123,8 +129,8 @@ const handleClick = function(e) {
                 contextid,
                 {id: id}
             ).done((html) => {
-                if (button.closest('.modal-body') && !button.closest('[data-region="plenum-activity-report"]')) {
-                    Templates.replaceNodeContents(button.closest('.modal-body'), '<div>' + html + '</div>');
+                if (button.closest(SELECTORS.PREVIEW)) {
+                    Templates.replaceNodeContents(button.closest(SELECTORS.PREVIEW), html);
                 } else {
                     Notification.alert(getString('viewmotion', 'mod_plenum'), html);
                 }
