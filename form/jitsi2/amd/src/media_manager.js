@@ -21,9 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 var domain;
+var connection;
 
 import Ajax from "core/ajax";
-import {get_string as getString} from "core/str";
 import JitsiMeetJS from "plenumform_jitsi2/lib-jitsi-meet.min";
 import Notification from "core/notification";
 import Templates from "core/templates";
@@ -57,16 +57,19 @@ export default class MediaManager {
 
         JitsiMeetJS.init();
         JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.DEBUG);
+        if (connection) {
+            connection.disconnect();
+        }
 
-        this.connection = new JitsiMeetJS.JitsiConnection(null, jwt, {
+        connection = new JitsiMeetJS.JitsiConnection(null, jwt, {
             serviceUrl: `https://${ domain }/http-bind`,
             hosts: {
                 domain: domain,
                 muc: `conference.${ domain }`
             }
         });
-        this.connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, () => {
-            this.room = this.connection.initJitsiConference(room, {
+        connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, () => {
+            this.room = connection.initJitsiConference(room, {
                 disableSimulcast: true
             });
             this.room.addEventListener(JitsiMeetJS.events.conference.TRACK_ADDED, track => {
@@ -105,14 +108,8 @@ export default class MediaManager {
 
             this.room.join();
         });
-        this.connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, () => {
-            Notification.alert(
-                getString('disconnected', 'plenumform_jitsi2'),
-                getString('disconnectedmessage', 'plenumform_jitsi2')
-            );
-        });
 
-        this.connection.connect();
+        connection.connect();
 
         document.addEventListener('click', e => {
             this.handleClick(e);
@@ -247,6 +244,8 @@ export default class MediaManager {
         if (!button) {
             return;
         }
+        e.stopPropagation();
+        e.preventDefault();
 
         this.room.getLocalTracks().forEach(track => {
             track.dispose();

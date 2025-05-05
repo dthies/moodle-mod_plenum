@@ -426,10 +426,18 @@ function mod_plenum_output_fragment_motion($args) {
     $pluginclass = "\\plenumform_$form\\output\\motion";
     if (class_exists($pluginclass)) {
         $speakers = new $pluginclass($motion, $context);
-        return $OUTPUT->render($mainview) .  $OUTPUT->render($speakers);
+        return html_writer::tag(
+            'div',
+            $OUTPUT->render($mainview) .  $OUTPUT->render($speakers),
+            ['data-region' => 'view-motion']
+        );
     }
 
-    return $OUTPUT->render($mainview);
+    return html_writer::tag(
+        'div',
+        $OUTPUT->render($mainview),
+        ['data-region' => 'view-motion']
+    );
 }
 
 /**

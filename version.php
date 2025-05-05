@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_plenum';
-$plugin->release = '1.1.1';
-$plugin->version = 2025012803;
+$plugin->release = '1.1.2';
+$plugin->version = 2025012804;
 $plugin->requires = 2024041600;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = [
