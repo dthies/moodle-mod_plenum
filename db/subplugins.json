@@ -1,4 +1,8 @@
 {
+    "subplugintypes": {
+        "plenumtype": "motion",
+        "plenumform": "form"
+    },
     "plugintypes": {
         "plenumtype": "mod/plenum/motion",
         "plenumform": "mod/plenum/form"
