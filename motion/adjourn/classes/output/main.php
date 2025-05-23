@@ -86,7 +86,7 @@ class main implements renderable, templatable {
         $previous = new motion($this->motion->get('parent'));
         $data->previous = [
             'id' => $previous->get('id'),
-            'name' => $previous->get_data()->name,
+            'name' => $previous->get_data()->name ?? '',
             'pluginname' => get_string('pluginname', 'plenumtype_' . $previous->get('type')),
             'url' => (new moodle_url('/mod/plenum/motion.php', ['id' => $previous->get('id')]))->out(),
         ];

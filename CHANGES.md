@@ -1,5 +1,7 @@
 Change log
 
+v1.1.3 Improved reports for motions
+
 v1.1.2 Modals and js improved to work with Popup activities format
 
 v1.1.1 Adds new analytics indicators, improves configuration, and fixes bug.

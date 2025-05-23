@@ -25,8 +25,9 @@
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
+use core_reportbuilder\system_report_factory;
 use mod_plenum\motion;
-use mod_plenum\output\sessions;
+use mod_plenum\reportbuilder\local\systemreports\motions;
 
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
@@ -78,8 +79,8 @@ if (empty($id)) {
 
     groups_print_activity_menu($cm, $PAGE->url);
 
-    $sessions = new sessions($modulecontext, $cm, $moduleinstance);
-    echo $OUTPUT->render($sessions);
+    $report = system_report_factory::create(motions::class, $modulecontext);
+    echo $report->output();
 } else if (class_exists($classname)) {
     if ($groupid = $motion->get('groupid')) {
         $groupmode = groups_get_activity_groupmode($cm, $course);
