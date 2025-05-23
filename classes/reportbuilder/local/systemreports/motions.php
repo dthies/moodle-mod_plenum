@@ -122,15 +122,26 @@ class motions extends system_report {
     protected function add_columns(motion $motionentity): void {
         $entitymainalias = $motionentity->get_table_alias('plenum_motion');
 
-        $columns = [
-            'motion:type',
-            'motion:timemodified',
-            'user:fullname',
-            'motion:status',
-            'motion:parent',
-        ];
+        if (
+            ($parameters = $this->get_parameters())
+            && !empty($parameters['userid'])
+        ) {
+            $entity = $this->get_entity('motion');
+            foreach (['type', 'timemodified', 'status', 'parent'] as $columnname) {
+                $this->add_column($entity->get_column($columnname)->set_is_sortable(false));
+            }
+        } else {
+            $columns = [
+                'motion:type',
+                'motion:timemodified',
+                'user:fullname',
+                'motion:status',
+                'motion:parent',
+            ];
 
-        $this->add_columns_from_entities($columns);
+            $this->add_columns_from_entities($columns);
+        }
+
 
         // Default sorting.
         $this->set_initial_sort_column('motion:timemodified', SORT_ASC);
@@ -151,6 +162,12 @@ class motions extends system_report {
      * unique identifier
      */
     protected function add_filters(): void {
+        if (
+            ($parameters = $this->get_parameters())
+            && !empty($parameters['userid'])
+        ) {
+            return;
+        }
 
         $this->add_filters_from_entities([
             'user:fullname',

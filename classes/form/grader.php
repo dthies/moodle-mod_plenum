@@ -30,6 +30,9 @@ use context;
 use context_user;
 use core_form\dynamic_form;
 use core_user;
+use core_reportbuilder\system_report_factory;
+use html_writer;
+use mod_plenum\reportbuilder\local\systemreports\motions;
 use mod_plenum\motion;
 use moodle_exception;
 use moodle_url;
@@ -129,9 +132,18 @@ class grader extends dynamic_form {
         );
 
         $cm = get_coursemodule_from_id('plenum', $context->instanceid);
+        $context = $this->get_context_for_dynamic_submission();
         $report = new activity_report($context, $data->userid);
+        $report = system_report_factory::create(motions::class, $context, '', '', 0, ['userid' => $data->userid]);
 
-        $mform->addElement('html', $OUTPUT->render($report));
+        $mform->addElement('html', html_writer::tag(
+            'div',
+            $report->output(),
+            [
+                'data-region' => 'plenum-activity-report',
+                'data-contextid' => $context->id,
+            ]
+        ));
 
         $mform->setDefault('userid', $data->userid);
         $plenum = \core\di::get(\mod_plenum\manager::class)->get_plenum($context, $cm);

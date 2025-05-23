@@ -97,11 +97,17 @@ class motion extends base {
                 if (empty($type)) {
                     return '';
                 }
-                return html_writer::link(
-                    new \moodle_url('/mod/plenum/motion.php', ['id' => $row->id]),
-                    new lang_string('pluginname', "plenumtype_$type"),
+                return html_writer::tag(
+                    'div',
+                    html_writer::link(
+                        new \moodle_url('/mod/plenum/motion.php', ['id' => $row->id]),
+                        new lang_string('pluginname', "plenumtype_$type"),
+                        [
+                            'data-action' => 'preview',
+                        ]
+                    ),
                     [
-                        'data-action' => 'preview',
+                        'data-motion' => $row->id,
                     ]
                 );
             })
@@ -185,11 +191,17 @@ class motion extends base {
                 if (empty($parent)) {
                     return '';
                 }
-                return html_writer::link(
-                    new \moodle_url('/mod/plenum/motion.php', ['id' => $parent]),
-                    new lang_string('pluginname', "plenumtype_$row->parenttype"),
+                return html_writer::tag(
+                    'div',
+                    html_writer::link(
+                        new \moodle_url('/mod/plenum/motion.php', ['id' => $parent]),
+                        new lang_string('pluginname', "plenumtype_$row->parenttype"),
+                        [
+                            'data-action' => 'preview',
+                        ]
+                    ),
                     [
-                        'data-action' => 'preview',
+                        'data-motion' => $parent,
                     ]
                 );
             })
