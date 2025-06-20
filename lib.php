@@ -161,11 +161,11 @@ function plenum_grade_item_update($moduleinstance, $reset = false) {
         'itemid' => 0,
     ];
 
-    if ($moduleinstance->grade > 0) {
+    if ($moduleinstance->grade ?? 0 > 0) {
         $item['gradetype'] = GRADE_TYPE_VALUE;
         $item['grademax']  = $moduleinstance->grade;
         $item['grademin']  = 0;
-    } else if ($moduleinstance->grade < 0) {
+    } else if ($moduleinstance->grade ?? 0 < 0) {
         $item['gradetype'] = GRADE_TYPE_SCALE;
         $item['scaleid']   = -$moduleinstance->grade;
     } else {

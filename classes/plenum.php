@@ -133,7 +133,7 @@ class plenum {
 
         $completiontimeexpected = !empty($moduleinstance->completionexpected) ? $moduleinstance->completionexpected : null;
         \core_completion\api::update_completion_date_event(
-            $moduleinstance->coursemodule,
+            $this->get_course_module()->id,
             'plenum',
             $moduleinstance->id,
             $completiontimeexpected
