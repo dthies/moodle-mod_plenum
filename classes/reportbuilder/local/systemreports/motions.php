@@ -142,7 +142,6 @@ class motions extends system_report {
             $this->add_columns_from_entities($columns);
         }
 
-
         // Default sorting.
         $this->set_initial_sort_column('motion:timemodified', SORT_ASC);
     }

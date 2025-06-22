@@ -42,7 +42,9 @@ Feature: Queue speakers
     And I click on "Allow motion" "button" in the "region-main" "region"
     And I click on "Save changes" "button" in the "Confirm" "dialogue"
     And I click on "Grade users" "button" in the "region-main" "region"
-    Then I should see "Resolution: Thanks" in the "Grade users" "dialogue"
+    And I click on "Resolution" "link" in the "Grade users" "dialogue"
+    Then I should see "Resolution: Thanks" in the "View motion" "dialogue"
+    And I click on "OK" "button" in the "View motion" "dialogue"
     And I set the following fields in the "Grade users" "dialogue" to these values:
         | Grade       | 50               |
     And I click on "Save changes" "button" in the "Grade users" "dialogue"
