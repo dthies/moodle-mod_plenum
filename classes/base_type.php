@@ -42,7 +42,7 @@ use user_picture;
  */
 class base_type implements renderable, templatable {
     /** Whether information should be shown on motion */
-    const DETAIL = false;
+    public const DETAIL = false;
 
     /** @var $component */
     public string $component = 'plenumtype_open';

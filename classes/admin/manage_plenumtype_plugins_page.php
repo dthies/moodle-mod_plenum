@@ -24,6 +24,9 @@
 
 namespace mod_plenum\admin;
 
+use flexible_table;
+use moodle_url;
+
 /**
  * Class manage_plenumtype_plugins_page.
  *
@@ -114,11 +117,17 @@ class manage_plenumtype_plugins_page extends \admin_setting {
         $txt = get_strings(['settings', 'name', 'enable', 'disable', 'default']);
         $txt->uninstall = get_string('uninstallplugin', 'core_admin');
 
-        $table = new \html_table();
-        $table->head  = [$txt->name, $txt->enable, $txt->settings, $txt->uninstall];
-        $table->align = ['left', 'center', 'center', 'center', 'center'];
-        $table->attributes['class'] = 'manageplenumtypetable generaltable admintable';
-        $table->data  = [];
+        $table = new flexible_table('manageplenumtypeplugins');
+        $table->define_headers([$txt->name, $txt->enable, $txt->settings, $txt->uninstall]);
+        $table->define_baseurl(new moodle_url('/admin/settings.php', ['section' => 'manageplenumtypeplugins']));
+        $table->set_attribute('class', 'manageplenumtypetable generaltable admintable m-3');
+        $table->define_columns([
+            'strtypename',
+            'hideshow',
+            'settings',
+            'uninstall',
+        ]);
+        $table->setup();
 
         $totalenabled = 0;
         $count = 0;
@@ -173,26 +182,16 @@ class manage_plenumtype_plugins_page extends \admin_setting {
                 $uninstall = \html_writer::link($uninstallurl, $txt->uninstall);
             }
 
-            $row = new \html_table_row([$strtypename, $hideshow, $settings, $uninstall]);
-            if ($class) {
-                $row->attributes['class'] = $class;
-            }
-            $table->data[] = $row;
+            $row = [$strtypename, $hideshow, $settings, $uninstall];
+            $table->add_data($row, $class);
             $count++;
         }
 
-        // Sort table data.
-        usort($table->data, function ($a, $b) {
-            $aid = $a->cells[0]->text;
-            $bid = $b->cells[0]->text;
+        ob_start();
+        $table->finish_output();
+        $return .= ob_get_contents();
+        ob_end_clean();
 
-            if ($aid == $bid) {
-                return 0;
-            }
-            return $aid < $bid ? -1 : 1;
-        });
-
-        $return .= \html_writer::table($table);
         return highlight($query, $return);
     }
 }

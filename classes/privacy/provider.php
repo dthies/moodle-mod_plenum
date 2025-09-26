@@ -48,7 +48,7 @@ class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider {
     /** Interface for all plenum form sub-plugins. */
-    const PLENUMFORM_INTERFACE = 'mod_plenum\privacy\plenumform_provider';
+    public const PLENUMFORM_INTERFACE = 'mod_plenum\privacy\plenumform_provider';
 
     /**
      * Returns meta data about this system.

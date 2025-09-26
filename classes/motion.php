@@ -47,25 +47,25 @@ use stdClass;
  */
 class motion extends persistent implements renderable, templatable {
     /** Table name for the persistent. */
-    const TABLE = 'plenum_motion';
+    public const TABLE = 'plenum_motion';
 
     /**  Draft status for motions */
-    const STATUS_DRAFT = 0;
+    public const STATUS_DRAFT = 0;
 
     /**  Status for pending motions */
-    const STATUS_PENDING = 1;
+    public const STATUS_PENDING = 1;
 
     /**  Status for motion being discussed on floor */
-    const STATUS_OPEN = 2;
+    public const STATUS_OPEN = 2;
 
     /**  Status for questions not to be acted on */
-    const STATUS_CLOSED = 3;
+    public const STATUS_CLOSED = 3;
 
     /**  Status for questions approved by body */
-    const STATUS_ADOPT = 4;
+    public const STATUS_ADOPT = 4;
 
     /**  Status for question that body rejects*/
-    const STATUS_DECLINE = 5;
+    public const STATUS_DECLINE = 5;
 
     /**
      * Return the definition of the properties of this model.
