@@ -29,8 +29,8 @@ require_once(__DIR__ . '/lib.php');
 $id = required_param('id', PARAM_INT);
 
 $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
-if ($CFG->branch > 500) {
-    \core_courseformat\activityoverviewbase::redirect_to_overview_page($id, 'plenum');
+if (class_exists('core_courseformat\\activityoverviewbase')) {
+    core_courseformat\activityoverviewbase::redirect_to_overview_page($id, 'plenum');
 }
 
 require_course_login($course);

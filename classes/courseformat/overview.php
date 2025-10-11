@@ -50,10 +50,18 @@ class overview extends \core_courseformat\activityoverviewbase {
         $url = new url('/mod/plenum/view.php', ['id' => $this->cm->id]);
         $text = get_string('view');
 
-        $content = new overviewaction(
-            url: $url,
-            text: $text,
-        );
+        if (class_exists('overviewaction')) {
+            $content = new overviewaction(
+                url: $url,
+                text: $text,
+            );
+        } else {
+            $content = new action_link(
+                url: $url,
+                text: $text,
+                attributes: ['class' => button::SECONDARY_OUTLINE->classes()],
+            );
+        }
 
         return new overviewitem(
             name: get_string('actions'),
