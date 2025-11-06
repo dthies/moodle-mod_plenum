@@ -24,6 +24,7 @@
 
 namespace mod_plenum\plugininfo;
 
+use core\update\info;
 use core\plugininfo\base;
 use moodle_url;
 
@@ -168,5 +169,37 @@ class plenumform extends base {
         }
 
         return $enabled;
+    }
+
+    /**
+     * If there are updates for this plugin available, returns them.
+     *
+     * Returns array of \core\update\info objects, if some update
+     * is available. Returns null if there is no update available or if the update
+     * availability is unknown.
+     *
+     * Populates the property $availableupdates on first call (lazy loading).
+     *
+     * @return array|null
+     */
+    public function available_updates() {
+        global $CFG;
+
+        $updates = parent::available_updates();
+
+        switch ($this->name) {
+            case 'major':
+                $info = [
+                    'maturity' => MATURITY_STABLE,
+                    'release' => '0.1',
+                    'version' => 2023102832,
+                ];
+                break;
+        }
+        if (!empty($info) && $this->versiondb < $info['version']) {
+            $updates['plenumform_' . $this->name] = new info('plenumform_' . $this->name, $info);
+        }
+
+        return $updates;
     }
 }
