@@ -101,6 +101,7 @@ $string['noplenuminstances'] = 'No plenary meetings';
 $string['nopossiblemotions'] = 'There are currently no motions that you can offer.';
 $string['offeredby'] = 'Offered by: {$a}';
 $string['offeredmotions'] = 'Offered motions';
+$string['page-mod-plenum-motion'] = 'Plenary meeting motion page';
 $string['page-mod-plenum-view'] = 'Plenary meeting view page';
 $string['page-mod-plenum-x'] = 'Any Plenary meeting module page';
 $string['pendingmotions'] = 'Pending motions';

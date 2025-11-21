@@ -49,6 +49,8 @@ function plenum_supports($feature) {
             return null;
         case FEATURE_MOD_PURPOSE:
             return MOD_PURPOSE_COLLABORATION;
+        case FEATURE_MOD_OTHERPURPOSE:
+            return MOD_PURPOSE_COMMUNICATION;
         default:
             return null;
     }
@@ -507,6 +509,7 @@ function plenum_reset_userdata(stdClass $data): array {
 function plenum_page_type_list($pagetype, $parentcontext, $currentcontext) {
     $modulepagetype = [
         'mod-plenum-*'       => get_string('page-mod-plenum-x', 'plenum'),
+        'mod-plenum-motion'    => get_string('page-mod-plenum-motion', 'plenum'),
         'mod-plenum-view'    => get_string('page-mod-plenum-view', 'plenum'),
     ];
 
