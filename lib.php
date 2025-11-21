@@ -34,6 +34,9 @@ use mod_plenum\plugininfo\plenum;
  * @return true | null True if the feature is supported, null otherwise.
  */
 function plenum_supports($feature) {
+    if (defined('FEATURE_MOD_OTHERPURPOSE') &&  $feature == FEATURE_MOD_OTHERPURPOSE) {
+        return MOD_PURPOSE_COMMUNICATION;
+    }
     switch ($feature) {
         case FEATURE_ADVANCED_GRADING:
         case FEATURE_COMPLETION_HAS_RULES:
@@ -49,8 +52,6 @@ function plenum_supports($feature) {
             return null;
         case FEATURE_MOD_PURPOSE:
             return MOD_PURPOSE_COLLABORATION;
-        case FEATURE_MOD_OTHERPURPOSE:
-            return MOD_PURPOSE_COMMUNICATION;
         default:
             return null;
     }
