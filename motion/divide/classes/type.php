@@ -38,10 +38,10 @@ use renderer_base;
  */
 class type extends base_type {
     /** Plugin component */
-    const COMPONENT = 'plenumtype_divide';
+    public const COMPONENT = 'plenumtype_divide';
 
     /** Whether information should be shown on motion */
-    const DETAIL = true;
+    public const DETAIL = true;
 
     /** @var $component */
     public string $component = 'plenumtype_divide';

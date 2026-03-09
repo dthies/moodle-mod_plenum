@@ -39,10 +39,10 @@ use renderer_base;
  */
 class type extends base_type {
     /** Plugin component */
-    const COMPONENT = 'plenumtype_open';
+    public const COMPONENT = 'plenumtype_open';
 
     /** Whether information should be shown on motion */
-    const DETAIL = true;
+    public const DETAIL = true;
 
     /** @var $component */
     public string $component = 'plenumtype_open';

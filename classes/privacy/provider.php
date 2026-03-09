@@ -44,8 +44,8 @@ use mod_plenum\motion;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\plugin\provider {
     /** Interface for all plenum form sub-plugins. */
     public const PLENUMFORM_INTERFACE = 'mod_plenum\privacy\plenumform_provider';

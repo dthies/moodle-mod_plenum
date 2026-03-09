@@ -16,6 +16,8 @@
 
 namespace mod_plenum\search;
 
+use core_courseformat\local\cmactions;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -185,7 +187,13 @@ final class search_test extends \advanced_testcase {
         $this->assertTrue($searcharea->restrict_cm_access_by_group($modinfo->get_cm($plenum->cmid)));
 
         // In visible groups mode, it won't request restriction by group.
-        set_coursemodule_groupmode($plenum->cmid, VISIBLEGROUPS);
+        if (method_exists(cmactions::class, 'set_groupmode')) {
+            $cmactions = new cmactions($course1);
+            $result = $cmactions->set_groupmode($plenum->cmid, VISIBLEGROUPS);
+            $this->assertTrue($result);
+        } else {
+            set_coursemodule_groupmode($plenum->cmid, VISIBLEGROUPS);
+        }
         $modinfo = get_fast_modinfo($course1);
         $this->assertFalse($searcharea->restrict_cm_access_by_group($modinfo->get_cm($plenum->cmid)));
     }

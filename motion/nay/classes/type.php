@@ -38,7 +38,7 @@ use renderer_base;
  */
 class type extends base_type {
     /** Plugin component */
-    const COMPONENT = 'plenumtype_nay';
+    public const COMPONENT = 'plenumtype_nay';
 
     /** @var $component */
     public string $component = 'plenumtype_nay';

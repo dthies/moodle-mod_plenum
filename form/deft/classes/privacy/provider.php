@@ -40,7 +40,7 @@ use core_privacy\local\request\userlist;
  * @copyright  2024 Daniel Thies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \mod_plenum\privacy\plenumform_provider, \core_privacy\local\metadata\provider {
+class provider implements \core_privacy\local\metadata\provider, \mod_plenum\privacy\plenumform_provider {
     /**
      * Returns meta data about this system.
      *
